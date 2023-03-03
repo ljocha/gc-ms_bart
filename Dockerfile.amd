@@ -1,0 +1,15 @@
+FROM rocm/pytorch
+
+RUN pip3 install matchms
+RUN pip3 install jupyterlab
+
+RUN pip3 install rdkit pandas matplotlib cython numba scikit-learn
+
+RUN pip3 install python-igraph ruffus tqdm boto3 networkx graphviz tensorflow tensorboardX diskcache PyYAML natsort pyarrow seaborn SQLAlchemy click
+
+RUN pip3 install git+https://github.com/thejonaslab/tinygraph.git
+
+RUN mkdir -p /tmp/rassp-public/rassp
+COPY rassp-public/setup.py /tmp/rassp-public/
+COPY rassp-public/rassp/ /tmp/rassp-public/rassp/
+RUN cd /tmp/rassp-public && python -m pip install -e .
