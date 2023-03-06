@@ -10,6 +10,7 @@ import networkx as nx
 import rdkit.Chem.Descriptors
 import sys
 
+from rassp import util
 from .util import get_nos_coords, get_nos
 from rassp.msutil import masscompute
 
