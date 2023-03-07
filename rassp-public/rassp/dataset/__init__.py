@@ -92,7 +92,12 @@ class ParquetDataset:
         mol = Chem.Mol(row['rdmol'])
         spect = np.array(row['spect'])
 
-        features_dict = self.featurizer(mol)
+        try:
+            features_dict = self.featurizer(mol)
+
+        except Exception as e:
+            raise RuntimeError(row.smiles) from e
+             
         preds_dict = self.pred_featurizer(mol, spect)
         out_dict = {
             **features_dict,
