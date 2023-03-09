@@ -1,4 +1,5 @@
-FROM rocm/pytorch
+# latest with cuda 11.8; required at A100, 12.0 is broken there
+FROM nvcr.io/nvidia/pytorch:22.12-py3
 
 RUN pip3 install matchms
 RUN pip3 install jupyterlab
@@ -25,11 +26,19 @@ COPY rassp-public/rassp/featurize/ $RASSP/featurize/
 COPY rassp-public/rassp/dataset/ $RASSP/dataset/
 COPY rassp-public/rassp/msutil/ $RASSP/msutil/
 
-RUN pip install ipywidgets
-RUN jupyter nbextension enable --py widgetsnbextension
-
 WORKDIR /build/
 RUN python -m pip install -e .
 RUN python -c 'import rassp.msutil'
 
-WORKDIR /work
+RUN pip3 install jupyterhub
+RUN pip3 install ipywidgets
+RUN jupyter nbextension enable --py widgetsnbextension
+
+RUN useradd -m -u 1000 jovyan
+USER jovyan
+WORKDIR /home/jovyan
+
+COPY start-notebook.sh /usr/local/bin/
+ENTRYPOINT ["/bin/bash"]
+CMD ["start-notebook.sh"]
+
