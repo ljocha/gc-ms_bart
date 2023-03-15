@@ -15,14 +15,16 @@ with open('rassp-public/rassp/expconfig/demo.yaml') as cf:
 exp_config['cluster_config']['data_dir'] = '.'
 exp_config['DATALOADER_NUM_WORKERS'] = 8
 exp_config['max_epochs'] = 200
-#exp_config['epoch_size'] = 4096
+exp_config['epoch_size'] = 4096
 exp_config['test_epoch_size'] = 4096
-exp_config['train_epoch_size'] = 42
+#exp_config['test_epoch_size'] = 44
+#exp_config['train_epoch_size'] = 420
 exp_config['batch_size'] = 4
 exp_config['checkpoint_every_n_epochs'] = 1
+exp_config['validate_every'] = 4
 exp_config['automatic_mixed_precision'] = False # broken
-exp_config['featurize_config']['explicit_formulae_config']['max_formulae'] = 80000 # XXX
-# exp_config['featurize_config']['explicit_formulae_config']['num_peaks_per_formula'] = 32 # XXX
+exp_config['featurize_config']['explicit_formulae_config']['max_formulae'] = 100000 # XXX
+exp_config['featurize_config']['explicit_formulae_config']['num_peaks_per_formula'] = 24 # XXX
 exp_config['featurize_config']['element_oh']=list(valid_atoms)
 exp_config['featurize_config']['explicit_formulae_config']['formula_possible_atomicno'] = list(valid_atoms)
 
