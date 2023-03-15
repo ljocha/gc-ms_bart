@@ -170,13 +170,19 @@ def train(
     print("we are training with", len(ds_train))
     print("we are testing with", len(ds_test))
 
+    # ljocha
+    #for t in ds_test:
+    #    pass
+    #exit(1)
+
+
     dataloader_name = exp_config.get("dataloader_func",
                                  'torch.utils.data.DataLoader')
 
     dataloader_creator = eval(dataloader_name)
 
-    epoch_size = exp_config.get('epoch_size', 8192)
-    train_sampler = netutil.SubsetSampler(epoch_size, len(ds_train), shuffle=True)
+    train_epoch_size = exp_config.get('train_epoch_size',exp_config.get('epoch_size', 8192))
+    train_sampler = netutil.SubsetSampler(train_epoch_size, len(ds_train), shuffle=True)
     DATALOADER_PERSISTENT_WORKERS = False
     if DATALOADER_NUM_WORKERS == 0:
         DATALOADER_PERSISTENT_WORKERS = False
@@ -197,7 +203,8 @@ def train(
         collate_fn=collate_fn,
     )
     
-    test_sampler = netutil.SubsetSampler(epoch_size, len(ds_test), shuffle=True)
+    test_epoch_size = exp_config.get('test_epoch_size',exp_config.get('epoch_size', 8192))
+    test_sampler = netutil.SubsetSampler(test_epoch_size, len(ds_test), shuffle=True)
     dl_test = dataloader_creator(
         ds_test, batch_size=BATCH_SIZE, 
         pin_memory=DATALOADER_PIN_MEMORY,

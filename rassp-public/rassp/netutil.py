@@ -246,6 +246,9 @@ def run_epoch(
                         v['vals'],
                         v['shape'],
                     )
+                    if print_shapes:
+                        print("inds:",v['inds'])
+
             if postprocess_batch_fn is not None:
                 batch = postprocess_batch_fn(batch)
             batch_t = {k : util.move(v, USE_CUDA) for k, v in batch.items()}
@@ -256,7 +259,18 @@ def run_epoch(
 
             # TEST: automatic mixed-precision
             with autocast_context():
-                res = net(**batch_t)
+                # ljocha
+                try: 
+                    res = net(**batch_t)
+#                except RuntimeError as e:
+#                    _ = dl.__getitem__(i_batch)
+#                    print(f'ignored RuntimeError at {i_batch}')
+#                    print(e)
+#                    continue
+                except Exception as e:
+                    print(f'ignored Exception at {i_batch}')
+                    print(e)
+                    continue
 
                 input_mask_t = batch_t['input_mask']
                 input_idx_t = batch_t['input_idx']
@@ -445,6 +459,7 @@ def generic_runner(
                                  return_pred=True, desc='validate', 
                                  res_skip_keys=res_skip_keys,
                                  automatic_mixed_precision=automatic_mixed_precision,
+#                                 print_shapes=True, # ljocha
                                  )
             t2_validate = time.time()
             [v(test_res, "validate_", epoch_i) for v in validate_funcs]
