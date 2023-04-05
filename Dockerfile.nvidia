@@ -1,44 +1,44 @@
 # latest with cuda 11.8; required at A100, 12.0 is broken there
-FROM nvcr.io/nvidia/pytorch:22.12-py3
+FROM nvcr.io/nvidia/tensorflow:22.12-tf2-py3
 
-RUN pip3 install matchms
-RUN pip3 install jupyterlab
-
-RUN pip3 install rdkit pandas matplotlib cython numba scikit-learn
-
-RUN pip3 install python-igraph ruffus tqdm boto3 networkx graphviz tensorflow tensorboardX diskcache PyYAML natsort pyarrow seaborn SQLAlchemy click
-
-RUN pip3 install git+https://github.com/thejonaslab/tinygraph.git
-
-#RUN mkdir -p /tmp/rassp-public/rassp
-#COPY rassp-public/setup.py /tmp/rassp-public/
-#COPY rassp-public/rassp/ /tmp/rassp-public/rassp/
-#RUN cd /tmp/rassp-public && python -m pip install -e .
-
-RUN mkdir -p /build/rassp
-ENV RASSP /build/rassp
-COPY rassp-public/setup.py /build/
-#COPY --chown=build models/* $RASSP/models/
-COPY rassp-public/rassp/util.py rassp-public/rassp/inference_script.py rassp-public/rassp/run_rassp.py rassp-public/rassp/netutil.py $RASSP/
-# COPY --chown=build util.py netutil.py $RASSP/
-COPY rassp-public/rassp/model/ $RASSP/model/
-COPY rassp-public/rassp/featurize/ $RASSP/featurize/
-COPY rassp-public/rassp/dataset/ $RASSP/dataset/
-COPY rassp-public/rassp/msutil/ $RASSP/msutil/
-
-WORKDIR /build/
-RUN python -m pip install -e .
-RUN python -c 'import rassp.msutil'
-
-RUN pip3 install jupyterhub
-RUN pip3 install ipywidgets
-RUN jupyter nbextension enable --py widgetsnbextension
+RUN apt update -y && apt install -y python3-venv
 
 RUN useradd -m -u 1000 jovyan
-USER jovyan
-WORKDIR /home/jovyan
+RUN mkdir /opt/jovyan && chown jovyan /opt/jovyan
 
-COPY start-notebook.sh /usr/local/bin/
+USER jovyan
+WORKDIR /opt/jovyan
+
+RUN python -m venv .
+RUN . bin/activate && pip install torch tensorboard
+RUN . bin/activate && pip3 install jupyterlab jupyterhub ipywidgets
+RUN . bin/activate && pip3 install rdkit pandas matplotlib cython scikit-learn
+RUN . bin/activate && pip3 install matchms numba
+RUN . bin/activate && pip3 install python-igraph ruffus tqdm boto3 networkx graphviz diskcache PyYAML natsort pyarrow seaborn SQLAlchemy click
+RUN . bin/activate && pip3 install git+https://github.com/thejonaslab/tinygraph.git
+RUN . bin/activate && jupyter nbextension enable --py widgetsnbextension
+
+ENV RASSP /opt/jovyan/build/rassp
+RUN mkdir -p $RASSP
+COPY --chown=jovyan rassp-public/setup.py /opt/jovyan/build/
+#COPY --chown=build models/* $RASSP/models/
+COPY --chown=jovyan rassp-public/rassp/util.py rassp-public/rassp/inference_script.py rassp-public/rassp/run_rassp.py rassp-public/rassp/netutil.py $RASSP/
+# COPY --chown=build util.py netutil.py $RASSP/
+COPY --chown=jovyan rassp-public/rassp/model/ $RASSP/model/
+COPY --chown=jovyan rassp-public/rassp/featurize/ $RASSP/featurize/
+COPY --chown=jovyan rassp-public/rassp/dataset/ $RASSP/dataset/
+COPY --chown=jovyan rassp-public/rassp/msutil/ $RASSP/msutil/
+
+WORKDIR /opt/jovyan/build/
+RUN . /opt/jovyan/bin/activate && python -m pip install -e .
+RUN . /opt/jovyan/bin/activate && python -c 'import rassp.msutil'
+
+COPY start-notebook.sh /usr/local/bin
+
+RUN . /opt/jovyan/bin/activate && pip3 install numba
+RUN . /opt/jovyan/bin/activate && pip3 install ipympl
+
+WORKDIR /home/jovyan
 ENTRYPOINT ["/bin/bash"]
 CMD ["start-notebook.sh"]
 
