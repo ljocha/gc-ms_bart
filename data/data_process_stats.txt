@@ -1,4 +1,16 @@
-12M_derivatized
+30M 
+---------------
+originaly: 30M
+after canon, dedup, erasing corrupted mols, spectra gen..: ???
+filter high MZs: ???
+filter long spectra: ???
+
+train: 22430122
+test: 1246118
+valid: 1246114
+
+
+12M_derivatized  ... 8M derivatized (invalid filtered)
 ---------------
 originaly: 12.2M
 after canon, dedup, erasing corrupted mols, spectra gen..: 10M
@@ -15,7 +27,7 @@ valid: 390287
 # test len: 73249
 # valid len: 73250 
 
-# 8M
+# 8M ... ZINC15 - 2D-clean-inStock-all
 ----------------
 # train len: 4641078
 # test len: 

@@ -17,8 +17,10 @@
 # adam imports
 
 from transformers.modeling_outputs import BaseModelOutput, Seq2SeqModelOutput, Seq2SeqLMOutput
-from configuration_bart_spektro import BartSpektroConfig
+from .configuration_bart_spektro import BartSpektroConfig
 from transformers.models.bart.modeling_bart import BartPretrainedModel, BartLearnedPositionalEmbedding, BartEncoderLayer, BartDecoder, BartDecoderLayer
+from transformers.utils import ModelOutput
+from transformers.modeling_outputs import dataclass
 from typing import Optional, Tuple
 import torch
 from torch import nn
@@ -26,6 +28,69 @@ from torch.nn import CrossEntropyLoss
 import torch.utils.checkpoint
 import math
 import random
+import warnings
+
+
+@dataclass
+class Seq2SeqLMOutputSpectro(ModelOutput):
+    """
+    Base class for sequence-to-sequence language models outputs.
+
+    Args:
+        loss (`torch.FloatTensor` of shape `(1,)`, *optional*, returned when `labels` is provided):
+            Language modeling loss.
+        logits (`torch.FloatTensor` of shape `(batch_size, sequence_length, config.vocab_size)`):
+            Prediction scores of the language modeling head (scores for each vocabulary token before SoftMax).
+        past_key_values (`tuple(tuple(torch.FloatTensor))`, *optional*, returned when `use_cache=True` is passed or when `config.use_cache=True`):
+            Tuple of `tuple(torch.FloatTensor)` of length `config.n_layers`, with each tuple having 2 tensors of shape
+            `(batch_size, num_heads, sequence_length, embed_size_per_head)`) and 2 additional tensors of shape
+            `(batch_size, num_heads, encoder_sequence_length, embed_size_per_head)`.
+
+            Contains pre-computed hidden-states (key and values in the self-attention blocks and in the cross-attention
+            blocks) that can be used (see `past_key_values` input) to speed up sequential decoding.
+        decoder_hidden_states (`tuple(torch.FloatTensor)`, *optional*, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`):
+            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +
+            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.
+
+            Hidden-states of the decoder at the output of each layer plus the initial embedding outputs.
+        decoder_attentions (`tuple(torch.FloatTensor)`, *optional*, returned when `output_attentions=True` is passed or when `config.output_attentions=True`):
+            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
+            sequence_length)`.
+
+            Attentions weights of the decoder, after the attention softmax, used to compute the weighted average in the
+            self-attention heads.
+        cross_attentions (`tuple(torch.FloatTensor)`, *optional*, returned when `output_attentions=True` is passed or when `config.output_attentions=True`):
+            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
+            sequence_length)`.
+
+            Attentions weights of the decoder's cross-attention layer, after the attention softmax, used to compute the
+            weighted average in the cross-attention heads.
+        encoder_last_hidden_state (`torch.FloatTensor` of shape `(batch_size, sequence_length, hidden_size)`, *optional*):
+            Sequence of hidden-states at the output of the last layer of the encoder of the model.
+        encoder_hidden_states (`tuple(torch.FloatTensor)`, *optional*, returned when `output_hidden_states=True` is passed or when `config.output_hidden_states=True`):
+            Tuple of `torch.FloatTensor` (one for the output of the embeddings, if the model has an embedding layer, +
+            one for the output of each layer) of shape `(batch_size, sequence_length, hidden_size)`.
+
+            Hidden-states of the encoder at the output of each layer plus the initial embedding outputs.
+        encoder_attentions (`tuple(torch.FloatTensor)`, *optional*, returned when `output_attentions=True` is passed or when `config.output_attentions=True`):
+            Tuple of `torch.FloatTensor` (one for each layer) of shape `(batch_size, num_heads, sequence_length,
+            sequence_length)`.
+
+            Attentions weights of the encoder, after the attention softmax, used to compute the weighted average in the
+            self-attention heads.
+    """
+
+    loss: Optional[torch.FloatTensor] = None
+    logits: torch.FloatTensor = None
+    last_hidden_state: Optional[torch.FloatTensor] = None
+    past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
+    decoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    hidden_states: Optional[Tuple[torch.FloatTensor]] = None # Adam customization - the same as decoder_hidden_states; for rlhf we need the output to have this (bcs of hardcoded part in AutoModelForCausalLMWithValueHead forward...)
+    decoder_attentions: Optional[Tuple[torch.FloatTensor]] = None
+    cross_attentions: Optional[Tuple[torch.FloatTensor]] = None
+    encoder_last_hidden_state: Optional[torch.FloatTensor] = None
+    encoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
+    encoder_attentions: Optional[Tuple[torch.FloatTensor]] = None
 
 
 def shift_tokens_right(input_ids: torch.Tensor, pad_token_id: int, decoder_start_token_id: int):
@@ -97,7 +162,18 @@ class BartSpektroEncoder(BartPretrainedModel):
         if embed_tokens is not None:
             self.embed_tokens = embed_tokens
         else:
-            self.embed_tokens = nn.Embedding(config.vocab_size, embed_dim, self.padding_idx)
+            # Adam - if user wants one dictionary for each encoder and decoder (specified in config with separate_encoder_decoder_embeds=True)
+            # he also needs to specify max_mz (size of the dictionary for encoder). vocab_size is used only for decoder then. 
+            # if separate_encoder_decoder_embeds=False, or the parameter is missing the execution didn't get here from BartSpektroModel
+            # should be compatible with previous models with one tied dict
+            if hasattr(config, "separate_encoder_decoder_embeds") and config.separate_encoder_decoder_embeds == True: # all fine
+                if hasattr(config, "max_mz") and config.max_mz != None:
+                    num_embeddings = config.max_mz + 1
+                    self.embed_tokens = nn.Embedding(num_embeddings, embed_dim, self.padding_idx) # Adam customization
+                else:
+                    raise ValueError("config.max_mz must be set for BartSpektroEncoder to have separated embeddings (it denotes the size of the dictionary for encoder)")
+            else:
+                raise ValueError("This adjusted BartSpektroEncoder shouldn't be used appart from BartSpektroModel. Use BartEncoder instead.")
         
         if config.max_log_id:
             self.embed_positions = BartSpektroLearnedPositionalEmbedding(
@@ -212,8 +288,7 @@ class BartSpektroEncoder(BartPretrainedModel):
         if head_mask is not None:
             if head_mask.size()[0] != (len(self.layers)):
                 raise ValueError(
-                    f"The head_mask should be specified for {len(self.layers)} layers, but it is for {head_mask.size()[0]}."
-                )
+                    f"The head_mask should be specified for {len(self.layers)} layers, but it is for {head_mask.size()[0]}.")
 
         for idx, encoder_layer in enumerate(self.layers):
             if output_hidden_states:
@@ -263,19 +338,26 @@ class BartSpektroModel(BartPretrainedModel):
     def __init__(self, config: BartSpektroConfig):
         super().__init__(config)
 
-        padding_idx, vocab_size = config.pad_token_id, config.vocab_size
-        self.shared = nn.Embedding(vocab_size, config.d_model, padding_idx)
-
-        self.encoder = BartSpektroEncoder(config, self.shared)
-        self.decoder = BartDecoder(config, self.shared)
+        # this branch is also for older models before adding separate_encoder_decoder_embeds 
+        # separate_encoder_decoder_embeds is None - old models
+        # separate_encoder_decoder_embeds is False - new models that don't want to be separated
+        if not hasattr(config, "separate_encoder_decoder_embeds") or not config.separate_encoder_decoder_embeds:
+            print("WARNING: This model is using   O N E   dictionary both for encoder and decoder.")
+            self.shared = nn.Embedding(config.vocab_size, config.d_model, config.pad_token_id)
+        else:
+            print("WARNING: This model is using   T W O   dictionaries - one for encoder, one for decoder.")
+            self.shared = None
+        self.encoder = BartSpektroEncoder(config, embed_tokens=self.shared)  # Adam - removed creating shared embeddings and passing them to both parts
+        self.decoder = BartDecoder(config, embed_tokens=self.shared)         # Adam - removed creating shared embeddings and passing them to both parts
 
         # Initialize weights and apply final processing
         self.post_init()
 
     def get_input_embeddings(self):
-        return self.shared
+        return self.encoder.embed_tokens
 
     def set_input_embeddings(self, value):
+        print("MANUALLY SETTING EMBEDDINGS") # adam
         self.shared = value
         self.encoder.embed_tokens = self.shared
         self.decoder.embed_tokens = self.shared
@@ -366,26 +448,27 @@ class BartSpektroModel(BartPretrainedModel):
         if not return_dict:
             return decoder_outputs + encoder_outputs
 
-        return Seq2SeqModelOutput(
+        return Seq2SeqLMOutputSpectro(
             last_hidden_state=decoder_outputs.last_hidden_state,
             past_key_values=decoder_outputs.past_key_values,
             decoder_hidden_states=decoder_outputs.hidden_states,
+            hidden_states=decoder_outputs.hidden_states, # Adam customization - the same as decoder_hidden_states; for rlhf we need the output to have this (bcs of hardcoded part in AutoModelForCausalLMWithValueHead forward...)
             decoder_attentions=decoder_outputs.attentions,
             cross_attentions=decoder_outputs.cross_attentions,
             encoder_last_hidden_state=encoder_outputs.last_hidden_state,
             encoder_hidden_states=encoder_outputs.hidden_states,
-            encoder_attentions=encoder_outputs.attentions,
+            encoder_attentions=encoder_outputs.attentions
         )
 
-class BartSpektoForConditionalGeneration(BartPretrainedModel):
+class BartSpektroForConditionalGeneration(BartPretrainedModel):
     base_model_prefix = "model"
-    _keys_to_ignore_on_load_missing = [r"final_logits_bias", r"lm_head\.weight"]
+    _keys_to_ignore_on_load_missing = [r"final_logits_bias", r"lm_head.weight"]
 
     def __init__(self, config: BartSpektroConfig):
         super().__init__(config)
         self.model = BartSpektroModel(config)
-        self.register_buffer("final_logits_bias", torch.zeros((1, self.model.shared.num_embeddings)))
-        self.lm_head = nn.Linear(config.d_model, self.model.shared.num_embeddings, bias=False)
+        self.register_buffer("final_logits_bias", torch.zeros((1, self.model.decoder.embed_tokens.num_embeddings)))
+        self.lm_head = nn.Linear(config.d_model, self.model.decoder.embed_tokens.num_embeddings, bias=False)
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -414,6 +497,7 @@ class BartSpektoForConditionalGeneration(BartPretrainedModel):
         return self.lm_head
 
     def set_output_embeddings(self, new_embeddings):
+        print("MANUALLY SETTING OUTPUT EMBEDDINGS") # adam
         self.lm_head = new_embeddings
 
 
@@ -485,11 +569,12 @@ class BartSpektoForConditionalGeneration(BartPretrainedModel):
             output = (lm_logits,) + outputs[1:]
             return ((masked_lm_loss,) + output) if masked_lm_loss is not None else output
 
-        return Seq2SeqLMOutput(
+        return Seq2SeqLMOutputSpectro(
             loss=masked_lm_loss,
             logits=lm_logits,
             past_key_values=outputs.past_key_values,
             decoder_hidden_states=outputs.decoder_hidden_states,
+            hidden_states=outputs.hidden_states, # Adam customization - the same as decoder_hidden_states; for rlhf we need the output to have this (bcs of hardcoded part in AutoModelForCausalLMWithValueHead forward...)
             decoder_attentions=outputs.decoder_attentions,
             cross_attentions=outputs.cross_attentions,
             encoder_last_hidden_state=outputs.encoder_last_hidden_state,
