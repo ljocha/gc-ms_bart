@@ -1,44 +1,26 @@
 import os
-
-from datetime import datetime
-import json
-import os
-import pickle
-import random
-import time
 import wandb
 from pathlib import Path
-import gc
-import glob
-from tqdm import tqdm
 import torch
-import numpy as np
 import transformers
-from transformers import Seq2SeqTrainingArguments, Seq2SeqTrainer, PreTrainedTokenizerFast, Trainer
 import typer
 import yaml
 from pathlib import Path
-from typing import Dict, List, Optional, Tuple, Union
-from callbacks import PredictionLogger
-from metrics import SpectroMetrics
-from icecream import ic
+from typing import Dict
+from tokenizers import Tokenizer
+import peft
 
 
 # custom code
-from data_utils import SpectroDataset, SpectroDataCollator, load_all_datapipes
+from callbacks import PredictionLogger
+from metrics import SpectroMetrics
+from data_utils import SpectroDataCollator, load_all_datapipes
 from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
 from bart_spektro.configuration_bart_spektro import BartSpektroConfig
 from bart_spektro.selfies_tokenizer import hardcode_build_selfies_tokenizer
-from tokenizers import Tokenizer
-
+from general_utils import get_nice_time, build_tokenizer
 
 app = typer.Typer()
-
-
-def get_nice_time():
-    now = str(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
-    now = now.replace(":", "_").replace(" ", "-")
-    return now
 
 
 def enrich_best_metric_name(metric_name: str, dataset_name: str) -> str:
@@ -48,23 +30,134 @@ def enrich_best_metric_name(metric_name: str, dataset_name: str) -> str:
     return metric_name
 
 
-def build_tokenizer(tokenizer_path: str) -> PreTrainedTokenizerFast:
-    bpe_tokenizer = Tokenizer.from_file(tokenizer_path)
+def set_batch_size(hf_training_args: Dict):
+    """
+    Set batch sizes and gradient accumulation steps. If auto_bs is True, it computes the per device batch sizes and gas based on
+    given 'effective_{train, eval}_batch_size', number of GPUs, GPU RAM, and the size of model ('base' or 'large'). If auto_bs is False
+    or not provided, it uses the batch size and gas provided in hf_training_args - 'per_device_{train, eval}_batch_size',
+    'gradient_accumulation_steps' and 'eval_accumulation_steps'.
+    
+    Parameters:
+    -----------
+    hf_training_args (Dict): dictionary with training arguments
 
-    tokenizer = PreTrainedTokenizerFast(tokenizer_object=bpe_tokenizer,
-                                        bos_token="<bos>",
-                                        eos_token="<eos>",
-                                        unk_token="<ukn>",
-                                        pad_token="<pad>",
-                                        is_split_into_words=True)
-    return tokenizer
+    Returns:
+    --------
+    Dict: dictionary with updated training arguments
+    """
+
+    cvd = os.environ['CUDA_VISIBLE_DEVICES']
+    gpu_ram = torch.cuda.get_device_properties(0).total_memory
+    num_gpu = len(cvd.split(",")) if cvd else 0
+    auto_bs = hf_training_args.pop("auto_bs", False)
+    bart_size = hf_training_args.pop("bart_size", None)
+    if auto_bs:
+        print("\nUsing   A U T O M A T I C   batch size")
+        print("relies heavily on POSSIBLE_TO_FIT_ON_GPU hardcoded constant")
+        print("> it works well for BART base")
+        print("> it is computed from the effective BS)")
+        print("> per device BS and GAS are overwritten")
+        print("> it automatically distinguishes between 40GB and 80GB GPUs")
+
+        # GPU specific batch size
+        train_eff_bs = hf_training_args.pop("effective_train_batch_size")
+        eval_eff_bs = hf_training_args.pop("effective_eval_batch_size")
+        
+        if bart_size == "large":
+            if gpu_ram > 70*1e9:               # 80GB
+                possible_to_fit_on_gpu = 32
+                possible_to_fit_on_gpu_eval = 32
+            else:                              # 40GB
+                possible_to_fit_on_gpu = 16
+                possible_to_fit_on_gpu_eval = 16
+        
+        elif bart_size == "base":
+            if gpu_ram > 70*1e9:               # 80GB
+                possible_to_fit_on_gpu = 128
+                possible_to_fit_on_gpu_eval = 64  
+            else:                              # 40GB
+                possible_to_fit_on_gpu = 64
+                possible_to_fit_on_gpu_eval = 32  
+        else:
+            raise ValueError("bart_size must be provided in hf_training_args if auto_bs is True")    
+
+        gas = train_eff_bs // (num_gpu * possible_to_fit_on_gpu)
+        train_eff_bs = gas * num_gpu * possible_to_fit_on_gpu
+
+        eas = eval_eff_bs // (num_gpu * possible_to_fit_on_gpu_eval)
+        eval_eff_bs = eas * num_gpu * possible_to_fit_on_gpu_eval
+
+        if gas == 0 or eas == 0:
+            print("\nAUTO BS: Effective batch size (train or eval) is TOO SMALL for the type and num of GPUs")
+            print("> use LESS GPUs or INCREASE effective batch size")
+        else:
+            print("\nAUTO BS")
+            print(f"> GAS: {gas}")
+            print(f"> effective train batch size: {gas * num_gpu * possible_to_fit_on_gpu}")
+            print(f"> effective eval batch size: {eas * num_gpu * possible_to_fit_on_gpu_eval}")
+
+        hf_training_args["per_device_train_batch_size"] = possible_to_fit_on_gpu
+        hf_training_args["per_device_eval_batch_size"] = possible_to_fit_on_gpu_eval
+        hf_training_args["gradient_accumulation_steps"] = gas
+        hf_training_args["eval_accumulation_steps"] = gas
+
+    else:
+        print("Using   M A N U A L   batch size")
+        hf_training_args.pop("effective_train_batch_size", None)  # these have to be removed
+        hf_training_args.pop("effective_eval_batch_size", None)   # these have to be removed
+
+    print(f"> train batch size per GPU: {hf_training_args['per_device_train_batch_size']}")
+    print(f"> eval batch size per GPU: {hf_training_args['per_device_eval_batch_size']}")
+    print(f"> gradient accumulation steps: {hf_training_args['gradient_accumulation_steps']}")
+    print(f"> eval accumulation steps: {hf_training_args['eval_accumulation_steps']}")
+    print(f"> num of GPUs: {num_gpu}")
+    print(f"> GPU RAM: {gpu_ram}")
+
+    return hf_training_args
 
 
-def get_spectro_config(model_args: Dict, tokenizer: PreTrainedTokenizerFast) -> BartSpektroConfig:
+def freeze_model(model, train_using_peft, train_fc1_only, custom_freeze):
+    if train_using_peft:
+        peft_config = peft.get_peft_config(peft_config_dict) # not working yet (wasn't tested)
+        model = peft.get_peft_model(model, peft_config)
+
+    if train_fc1_only:
+        for param in model.parameters():
+            param.requires_grad = False
+
+        for name, param in model.named_parameters():
+            if "fc1" in name:
+                param.requires_grad = True
+        for name, param in model.get_decoder().named_parameters(): # type: ignore
+            if "embed" in name:
+                param.requires_grad = True
+
+    if custom_freeze:
+        for param in model.parameters():
+            param.requires_grad = False
+
+        for name, param in model.named_parameters():
+            if "bias" in name:
+                param.requires_grad = True
+
+        for name, param in model.get_encoder().named_parameters(): # type: ignore
+            if "fc1" in name:
+                param.requires_grad = True
+
+        for name, param in model.get_decoder().named_parameters(): # type: ignore
+            if "encoder_attn" in name or "self_attn" in name or "fc1" in name or "embed" in name:
+                param.requires_grad = True
+
+
+
+def get_spectro_config(model_args: Dict, tokenizer: transformers.PreTrainedTokenizerFast) -> BartSpektroConfig:
+    assert not (bool(model_args.get("restrict_intensities", None)) ^ bool(model_args.get("encoder_seq_len", None))), "restrict_intensities and encoder_position_embeddings must be both provided or both None"
+
     return BartSpektroConfig(separate_encoder_decoder_embeds=model_args["separate_encoder_decoder_embeds"],
                              vocab_size=len(tokenizer.get_vocab()),
-                             max_position_embeddings=model_args["seq_len"],
-                             max_length=model_args["seq_len"],
+                             decoder_max_position_embeddings=model_args["decoder_seq_len"],
+                             encoder_max_position_embeddings=model_args.get("encoder_seq_len", None), # specify only when restricting intensities, otherwise encoder embedding matrix is sized by max_log_id
+                             max_length=model_args["decoder_seq_len"],
                              max_mz=model_args["max_mz"],
                              tie_word_embeddings=False,     # exrtremely important - enables two vocabs, don't change
                              min_len=0,
@@ -91,7 +184,8 @@ def get_spectro_config(model_args: Dict, tokenizer: PreTrainedTokenizerFast) -> 
                              is_encoder_decoder=True,
                              decoder_start_token_id=3,
                              forced_eos_token_id=0,
-                             max_log_id=9)
+                             max_log_id=model_args.get("max_log_id", 9) if not model_args.get("restrict_intensities", False) else None # extremely important, don't change
+                             )
  
 
 @app.command()
@@ -130,32 +224,19 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
 
     hf_training_args = config["hf_training_args"]
     dataset_args = config["data_args"]
+    preprocess_args = config.get("preprocess_args", {})
     model_args = config["model_args"]
     example_gen_args = config["example_generation_args"]
     tokenizer_path = model_args["tokenizer_path"]
     use_wandb = hf_training_args["report_to"] == "wandb"
-    
-    # GPU specific batch size
-    gpu_ram = torch.cuda.get_device_properties(0).total_memory
-    print(f"GPU RAM: {gpu_ram}")
-    if gpu_ram > 70*1e9:
-        print("WARNING!!!: Using automatically specific batch size")
-        hf_training_args["per_device_train_batch_size"] = 128
-        hf_training_args["per_device_eval_batch_size"] = 64
-        hf_training_args["gradient_accumulation_steps"] = 1
-        hf_training_args["eval_accumulation_steps"] = 1
-        print(f"train batch size: {hf_training_args['per_device_train_batch_size']}")
-        print(f"eval batch size: {hf_training_args['per_device_eval_batch_size']}")
+    # get freeze args
+    train_using_peft = model_args.pop("train_using_peft", False)
+    train_fc_only = model_args.pop("train_fc_only", False)
+    custom_freeze = model_args.pop("custom_freeze", False)
 
-    else:
-        print("WARNING!!!: Using automatically specific batch size")
-        hf_training_args["per_device_train_batch_size"] = 64
-        hf_training_args["per_device_eval_batch_size"] = 64
-        hf_training_args["gradient_accumulation_steps"] = 2
-        hf_training_args["eval_accumulation_steps"] = 1
-        print(f"train batch size: {hf_training_args['per_device_train_batch_size']}")
-        print(f"eval batch size: {hf_training_args['per_device_eval_batch_size']}")
-    
+
+    hf_training_args = set_batch_size(hf_training_args)
+        
     # set the name for metric choosing the best model (add chosen dataset name)
     if dataset_args.get("dataset_for_choosing_best_model", None):
         hf_training_args["metric_for_best_model"] = enrich_best_metric_name(hf_training_args["metric_for_best_model"], 
@@ -171,7 +252,32 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
         tokenizer = build_tokenizer(tokenizer_path)
     print(f"TOKENIZER vocab size: {len(tokenizer.get_vocab())}")
     os.environ["TOKENIZERS_PARALLELISM"] = "false" # surpressing a warning
-    datapipes = load_all_datapipes(dataset_args)
+
+    if preprocess_args:
+        print("Using  O N - T H E - F L Y  PREPROCESSING")
+        preprocess_args = {
+            "restrict_intensities": model_args.get("restrict_intensities", False),
+            "inference_mode": False,
+            "max_num_peaks": preprocess_args.get("max_num_peaks", 300),
+            "max_mol_repr_len": preprocess_args.get("max_mol_repr_len", 100),
+            "max_mz": model_args["max_mz"],
+            "mol_repr": "selfies" if tokenizer_path == "selfies_tokenizer" else "smiles",
+            "log_base": preprocess_args.get("log_base", 1.7),
+            "log_shift": preprocess_args.get("log_shift", 9),
+            "max_cumsum": preprocess_args.get("max_cumsum", None),
+            "tokenizer": tokenizer,
+            "do_log_binning": preprocess_args.get("do_log_binning", True),
+            "linear_bin_decimals": preprocess_args.get("linear_bin_decimals", None),
+        }
+
+        if preprocess_args["do_log_binning"]:
+            model_args["max_log_id"] = preprocess_args["log_shift"]
+        else: 
+            if not preprocess_args.get("linear_bin_decimals", None): 
+                raise ValueError("linear_bin_decimals must be provided if do_log_binning is False. It's 2 for 100 bins, 3 for 1000 bins, ...")
+            model_args["max_log_id"] = 10**preprocess_args["linear_bin_decimals"]
+
+    datapipes = load_all_datapipes(dataset_args, preprocess_args)
     bart_spectro_config = get_spectro_config(model_args, tokenizer)
 
     print("Loading model...")
@@ -180,23 +286,25 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
         model = BartSpektroForConditionalGeneration.from_pretrained(checkpoint)
     else:
         model = BartSpektroForConditionalGeneration(bart_spectro_config)
+
     model.to(device)
-    ######
-    # ic("model embedding shape", model.model.encoder.embed_tokens.weight.shape) ####
-    # ic("tokenizer vocab size: ", len(tokenizer.get_vocab()))
-    # return
-    ######
 
-    num_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"Number of trainable parameters: {num_params}")
-
+    # model freezing
+    assert train_using_peft + train_fc_only + custom_freeze <= 1, "Only one of train_using_peft, train_fc_only, custom_freeze can be True"
+    if train_fc_only or custom_freeze or train_using_peft:
+        freeze_model(model, train_using_peft, train_fc_only, custom_freeze)
+    tuned_params = sum(p.shape.numel() for p in model.parameters() if p.requires_grad)
+    total_params = sum(p.shape.numel() for p in model.parameters())
+    print(f"Number of trained parameters: {tuned_params}/{total_params} = {tuned_params/total_params*100:.2f}%")
 
     # Init wandb
     if use_wandb:
         log_tags = [d for d in dataset_args["datasets"].keys()]
         log_tags.extend(add_tags)
         log_tags.append(wandb_group)
-        log_tags.append(f"params={num_params}")
+        log_tags.append(f"params={total_params}")
+        log_tags.append(f"trained_params={tuned_params}")
+        log_tags.append(f"trained_percentage={tuned_params/total_params*100:.2f}%")
         log_tags.append(f"lr={hf_training_args['learning_rate']}")
         log_tags.append(f"pd_bs={hf_training_args['per_device_train_batch_size']}")
         if additional_info:
@@ -238,9 +346,9 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
     # set callbacks
     sorted_dataset_names = sorted([name for name in datapipes["example"].keys()])
     prediction_callback = PredictionLogger(datasets=[datapipes["example"][name] for name in sorted_dataset_names],
-                                           prefix_tokens=[dataset_args["datasets"][name]["prefix_token"] for name in sorted_dataset_names],
+                                           source_tokens=[dataset_args["datasets"][name]["source_token"] for name in sorted_dataset_names],
                                            log_prefixes=sorted_dataset_names, # type: ignore
-                                           collator=SpectroDataCollator(),
+                                           collator=SpectroDataCollator(restrict_intensities=model_args.get("restrict_intensities", False)),
                                            log_every_n_steps=hf_training_args["eval_steps"],
                                            show_raw_preds=dataset_args["show_raw_preds"],
                                            log_to_wandb=use_wandb,
@@ -248,23 +356,23 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
                                         )
 
     compute_metrics = SpectroMetrics(tokenizer)
-    seq2seq_training_args = Seq2SeqTrainingArguments(**hf_training_args,
-                                                     output_dir=str(save_path),
-                                                     run_name=run_name,
-                                                     data_seed=dataset_args["data_seed"]
-                                                    )
+    seq2seq_training_args = transformers.Seq2SeqTrainingArguments(**hf_training_args,
+                                                                    output_dir=str(save_path),
+                                                                    run_name=run_name,
+                                                                    data_seed=dataset_args["data_seed"]
+                                                                    )
     
 
-    trainer = Seq2SeqTrainer(
-                model=model,                   
-                args=seq2seq_training_args,                
-                train_dataset=datapipes["train"],
-                eval_dataset=datapipes["valid"], 
-                callbacks=[prediction_callback],
-                tokenizer=tokenizer,
-                compute_metrics=compute_metrics,
-                data_collator = SpectroDataCollator(),
-            )
+    trainer = transformers.Seq2SeqTrainer(
+                    model=model,                   
+                    args=seq2seq_training_args,                
+                    train_dataset=datapipes["train"],
+                    eval_dataset=datapipes["valid"], 
+                    callbacks=[prediction_callback],
+                    tokenizer=tokenizer,
+                    compute_metrics=compute_metrics,
+                    data_collator = SpectroDataCollator(restrict_intensities=model_args.get("restrict_intensities", False)),
+                )
     
     
     if checkpoint and resume_id:

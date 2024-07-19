@@ -2,25 +2,22 @@ import sys
 import io
 import os
 import time 
-from datetime import datetime
 from pathlib import Path
 import typer
 import yaml
 import torch
 import numpy as np
-import pandas as pd
 import json
-from tokenizers import Tokenizer
 from transformers import PreTrainedTokenizerFast
-from transformers.utils import ModelOutput
 from tqdm import tqdm
 from typing import Dict, Any, Tuple, List
 from icecream import ic
 from rdkit import Chem, RDLogger
-from data_utils import SpectroDataset, SpectroDataCollator, build_single_datapipe
+from data_utils import SpectroDataCollator, build_single_datapipe
 # from bart_spektro import BartSpektroForConditionalGeneration
 from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
-from train_bart import build_tokenizer
+from general_utils import build_tokenizer, get_sequence_probs, timestamp_to_readable, hours_minutes_seconds
+from copy import deepcopy
 
 RDLogger.DisableLog('rdApp.*')
 
@@ -30,6 +27,7 @@ app = typer.Typer(pretty_exceptions_enable=False)
 def open_files(output_folder: Path, 
                checkpoint: Path, 
                dataset_config: Dict[str, Any],
+               data_range: str = "",
                additional_info: str = "") -> Tuple[io.TextIOWrapper, io.TextIOWrapper]:
     """Opens log and predictions files and returns their handles"""
     timestamp = time.time()
@@ -74,28 +72,6 @@ def get_canon_predictions(preds: List[List], idxs: List[List]):
     return canon_preds, canon_idxs
 
 
-def get_sequence_probs(model,
-                       generated_outputs: ModelOutput,
-                       batch_size: int,
-                       is_beam_search: bool):
-    """ collect the generation probability of all generated sequences """
-    transition_scores = model.compute_transition_scores(
-                                generated_outputs.sequences,
-                                generated_outputs.scores,
-                                beam_indices=generated_outputs.beam_indices if is_beam_search else None,
-                                normalize_logits=True)  # type: ignore
-
-    transition_scores = transition_scores.reshape(batch_size, -1, transition_scores.shape[-1])
-    transition_scores[torch.isinf(transition_scores)] = 0
-    if is_beam_search:
-        output_length = (transition_scores < 0).sum(dim=-1)
-        length_penalty = model.generation_config.length_penalty
-        all_probs = transition_scores.sum(dim=2).exp() / output_length**length_penalty
-    else:
-        all_probs = transition_scores.sum(dim=2).exp()
-    return all_probs
-
-
 def prepare_decoder_input(decoder_input_token: str, tokenizer: PreTrainedTokenizerFast, batch_size: int):
     """ prepare forced prefix input for the decoder"""
     if decoder_input_token:  # prepare dataset-specific prefixes for decoding
@@ -104,14 +80,6 @@ def prepare_decoder_input(decoder_input_token: str, tokenizer: PreTrainedTokeniz
     else:
         decoder_input_ids_batch = None
     return decoder_input_ids_batch
-
-
-def timestamp_to_readable(timestamp: float) -> str:    
-    return datetime.utcfromtimestamp(timestamp).strftime("%d/%m/%Y %H:%M:%S")
-
-
-def hours_minutes_seconds(seconds: float) -> str:
-    return time.strftime("%H:%M:%S", time.gmtime(seconds))
 
 
 @app.command()
@@ -132,6 +100,7 @@ def main(
     general_config = config["general"]
     dataloader_config = config["dataloader"]
     dataset_config = config["dataset"]
+    preprocess_args = deepcopy(config["preprocess_args"]) # deepcopy so tokenizer is not saved to logs
 
     config["command"] = " ".join(sys.argv)
     config["cuda_visible_devices"] = os.environ.get("CUDA_VISIBLE_DEVICES", None)
@@ -144,8 +113,12 @@ def main(
     device = general_config["device"]
     additional_info = general_config["additional_naming_info"]
     
+    tokenizer = build_tokenizer(config["tokenizer_path"])
+    preprocess_args["tokenizer"] = tokenizer
     datapipe = build_single_datapipe(dataset_config["data_path"],
                                      shuffle=False,
+                                     source_token=preprocess_args.pop("source_token"),
+                                     preprocess_args=preprocess_args,
                                      )
     if data_range:
         data_range_min, data_range_max = list(map(int, data_range.split(":")))
@@ -154,11 +127,11 @@ def main(
 
     # set output files
     log_file, predictions_file = open_files(output_folder, checkpoint, dataset_config, data_range, additional_info)
+    gt_smiles_file = open("TEST_SMILES_GT_LABELS_PREDICT.smi", "w+")   # TEST
 
     model = BartSpektroForConditionalGeneration.from_pretrained(checkpoint)
     model.generation_config.length_penalty = generation_config["length_penalty"]
-    tokenizer = build_tokenizer(config["tokenizer_path"])
-    loader = torch.utils.data.DataLoader(datapipe, **dataloader_config, collate_fn=SpectroDataCollator(eval_mode=True), drop_last=False, shuffle=False) # type: ignore
+    loader = torch.utils.data.DataLoader(datapipe, **dataloader_config, drop_last=False, shuffle=False, collate_fn=SpectroDataCollator(inference_mode=True, keep_all_columns=True)) # type: ignore
 
     decoder_input_token = generation_config.pop("decoder_input_token", "")
     decoder_input_ids = prepare_decoder_input(decoder_input_token, tokenizer, batch_size)
@@ -179,20 +152,17 @@ def main(
                 break
             
             # proceed with generation
-            input_ids = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
-            with torch.no_grad():
-                generated_outputs = model.generate( # type: ignore
-                    input_ids=input_ids,
-                    position_ids=batch["position_ids"].to(device),
-                    attention_mask=attention_mask,
-                    decoder_input_ids=decoder_input_ids.to(device),
-                    **generation_config,
-                    output_scores=True,
-                    return_dict_in_generate=True,
-                )
+            gt_smiless = batch.pop("mol_repr")    ################ !!!!!!!!!!!!!!!!!!!!! test
+            model_input = {key: value.to(device) for key, value in batch.items() if key in ["input_ids", "position_ids"]} # move tensors from batch to device
+            generated_outputs = model.generate( # type: ignore
+                decoder_input_ids=decoder_input_ids.to(device),
+                **model_input,
+                **generation_config,
+                output_scores=True,
+                return_dict_in_generate=True,
+            )
 
-            preds = tokenizer.decode_batch(generated_outputs.sequences.tolist(), skip_special_tokens=True) # type: ignore
+            preds = tokenizer.batch_decode(generated_outputs.sequences.tolist(), skip_special_tokens=True) # type: ignore
             preds = np.array(preds).reshape(batch_size, generation_config["num_return_sequences"])
             
             unique_preds, unique_idxs = get_unique_predictions(preds)
@@ -201,11 +171,13 @@ def main(
 
             result_jsonl = ""
             for i, group in enumerate(canon_preds):
+
                 result_jsonl += json.dumps({
                     group[j]: all_probs[i, canon_idx].item()
                     for j, canon_idx in enumerate(canon_idxs[i])}) + "\n"
             
             predictions_file.write(result_jsonl)
+            gt_smiles_file.write(gt_smiless[0] + "\n")   ############## test
 
     finished_time = time.time()
     
