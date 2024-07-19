@@ -1,7 +1,7 @@
 image=ljocha/gc-ms_bart
 port=8088
 
-flags=-v ${PWD}:/work -w /work -p ${port}:${port} --rm -ti -e HOME=/work
+flags=-v ${PWD}:/work -w /work --rm -ti -e HOME=/work
 user=-u ${shell id -u} 
 version=${shell cat VERSION}
 amdflags=--device=/dev/kfd --device=/dev/dri --shm-size 16G --group-add video --group-add render
@@ -15,10 +15,15 @@ build-nvidia:
 	docker push ${image}:nvidia-${version}
 
 run-amd:
-	docker run -ti ${flags} ${user} ${amdflags} ${image}:amd jupyter lab --ip 0.0.0.0 --port ${port}
+	docker run -ti ${flags} ${user} ${amdflags} -p ${port}:${port} ${image}:amd jupyter lab --ip 0.0.0.0 --port ${port}
+
+bash-amd:
+	docker run -ti ${flags} ${user} ${amdflags} ${image}:amd bash
 
 run-nvidia:
 	docker run -ti ${flags} ${user} ${nvidiaflags} ${image}:nvidia-${version} /usr/local/bin/jupyter lab --ip 0.0.0.0 --port ${port}
 
 root-amd:
 	docker run -ti ${flags} ${amdflags} ${image}:amd bash
+
+
