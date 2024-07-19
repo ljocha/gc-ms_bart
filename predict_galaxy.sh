@@ -3,4 +3,4 @@
 . /opt/conda/bin/activate BARTpredictCPU
 #conda activate BARTpredictCPU
 
-exec python "$@"
+exec python /opt/spectrum/predict.py "$@"
