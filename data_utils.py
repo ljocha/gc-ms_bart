@@ -218,7 +218,6 @@ def filter_datapoints(datadict, preprocess_args) -> bool:
 
     return True
 
-
 def range_filter(data_range: range) -> Callable[[Any], bool]:
    """Filter function for the datapipe based on the range.
    usage: datapipe.filter(filter_fn=range_filter(range(100)))"""
@@ -272,7 +271,7 @@ def build_single_datapipe(json_file: str,
         datapipe = datapipe.header(limit)
     if preprocess_args:
         datapipe = datapipe.map(lambda x: json.loads(x[1]))
-        datapipe = datapipe.filter(filter_fn=lambda d: filter_datapoints(d, preprocess_args)) # filter out too long data and stuff
+        datapipe = datapipe.map(lambda d: { **d, "invalid": not filter_datapoints(d, preprocess_args) } ) # filter out too long data and stuff
         datapipe = datapipe.map(lambda d: preprocess_datapoint(d, source_token, preprocess_args))
     else:
         datapipe = datapipe.map(lambda x: json.loads(x[1]))
