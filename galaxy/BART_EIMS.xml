@@ -1,0 +1,31 @@
+<tool id="BART_EIMS" name="BART prediction of EI-MS spectra" version="0.1.0+galaxy0" python_template_version="3.5" profile="21.05">
+    <requirements>
+        <container type="docker">cerit.io/ljocha/spectrum</container>
+    </requirements>
+    <command detect_errors="exit_code" interpreter="/bin/bash"><![CDATA[
+        . /opt/conda/bin/activate && conda activate BARTpredictCPU &&
+        rm -rf model out &&
+        mkdir -p model  &&
+        unzip -d model $model &&
+	sed 's?__DATA_PATH__?$spectra?' $__tool_directory__/config.yml.template >config.yml &&
+        python3 /opt/spectrum/predict.py --checkpoint model --config-file config.yml --output-folder out &&
+        mv out/tiny/*/predictions.jsonl $predictions
+    ]]></command>
+    <inputs>
+        <param type="data" name="model" format="zip" />
+        <param type="data" name="spectra" format="jsonl" />
+    </inputs>
+    <outputs>
+        <data name="predictions" format="jsonl" />
+    </outputs>
+    <tests>
+      <test>
+        <param name="model" value="model.zip"/>
+        <param name="spectra" value="1-in.jsonl"/>
+        <output name="predictions" file="1-out.jsonl"/>
+      </test>
+    </tests>
+    <help><![CDATA[
+    TODO: Fill in help.
+    ]]></help>
+</tool>
