@@ -7,22 +7,22 @@
         rm -rf model out &&
         mkdir -p model  &&
         unzip -d model $model &&
-	sed 's?__DATA_PATH__?$spectra?' $__tool_directory__/config.yml.template >config.yml &&
-        python3 /opt/spectrum/predict.py --checkpoint model --config-file config.yml --output-folder out &&
-        mv out/tiny/*/predictions.jsonl $predictions
+        python3 $__tool_directory__/msp2jsonl.py $spectra input.jsonl &&
+        python3 /opt/spectrum/predict.py --checkpoint model --config-file $__tool_directory__/config.yml --output-folder out &&
+        python3 $__tool_directory__/jsonl2tsv.py out/tiny/*/predictions.jsonl $predictions
     ]]></command>
     <inputs>
         <param type="data" name="model" format="zip" />
-        <param type="data" name="spectra" format="jsonl" />
+        <param type="data" name="spectra" format="msp" />
     </inputs>
     <outputs>
-        <data name="predictions" format="jsonl" />
+        <data name="predictions" format="tsv" />
     </outputs>
     <tests>
       <test>
         <param name="model" value="model.zip"/>
-        <param name="spectra" value="1-in.jsonl"/>
-        <output name="predictions" file="1-out.jsonl"/>
+        <param name="spectra" value="1-in.msp"/>
+        <output name="predictions" file="1-out.tsv"/>
       </test>
     </tests>
     <help><![CDATA[

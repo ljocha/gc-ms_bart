@@ -3,7 +3,7 @@ general:
   additional_naming_info: "greedy" # optional, st
 
 dataset:
-  data_path: "__DATA_PATH__"
+  data_path: "input.jsonl"
   dataset_name: tiny # rcx/ZINC/NIST/...    REQUIRED! (for naming)
   data_split: test # train/test/valid/... REQUIRED! (for naming)
 
