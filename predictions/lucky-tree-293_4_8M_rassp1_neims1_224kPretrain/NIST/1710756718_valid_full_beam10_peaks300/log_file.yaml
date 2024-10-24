@@ -60,10 +60,10 @@ evaluation_0:
     24544, 21062, 14312]'
   num_probsort_precise_preds: '9820'
   num_similsort_precise_preds: '16215'
-  percentage_of_better_than_threshold_probsort: '0.4273698406501757'
-  percentage_of_better_than_threshold_similsort: '0.6353408808602761'
-  percentage_of_precise_preds_probsort: '0.34851119707562905'
-  percentage_of_precise_preds_similsort: '0.5754693544380168'
+  rate_of_better_than_threshold_probsort: '0.4273698406501757'
+  rate_of_better_than_threshold_similsort: '0.6353408808602761'
+  rate_of_precise_preds_probsort: '0.34851119707562905'
+  rate_of_precise_preds_similsort: '0.5754693544380168'
   start_time_utc: 18/03/2024 15:34:59
   topk_probsort: '[0.6739041907814506, 0.588907576960351, 0.5473570242083595, 0.5170144312783562,
     0.4984079911410904, 0.48171086117261186, 0.46587541346812805, 0.4502050181436177,

@@ -33,8 +33,8 @@ evaluation_0:
     mean_db_score: '0.33121007358666665'
     mean_fpsd_score_probsort: '-0.2451356728180297'
     mean_fpsd_score_similsort: '-0.2451356728180297'
-    percentage_of_BART_wins_probsort: '0.16666666666666666'
-    percentage_of_BART_wins_similsort: '0.16666666666666666'
+    rate_of_BART_wins_probsort: '0.16666666666666666'
+    rate_of_BART_wins_similsort: '0.16666666666666666'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -54,10 +54,10 @@ evaluation_0:
   num_predictions_at_k_counter: '[30, 1]'
   num_probsort_precise_preds: '0'
   num_similsort_precise_preds: '0'
-  percentage_of_better_than_threshold_probsort: '0.0'
-  percentage_of_better_than_threshold_similsort: '0.0'
-  percentage_of_precise_preds_probsort: '0.0'
-  percentage_of_precise_preds_similsort: '0.0'
+  rate_of_better_than_threshold_probsort: '0.0'
+  rate_of_better_than_threshold_similsort: '0.0'
+  rate_of_precise_preds_probsort: '0.0'
+  rate_of_precise_preds_similsort: '0.0'
   start_time_utc: 20/04/2024 07:18:37
   topk_probsort: '[0.08607440076863694, 0.06896551724137931]'
   topk_similsort: '[0.08607440076863694, 0.06896551724137931]'
@@ -69,8 +69,8 @@ evaluation_1:
     mean_db_score: '0.33121007358666665'
     mean_fpsd_score_probsort: '-0.2451356728180297'
     mean_fpsd_score_similsort: '-0.2451356728180297'
-    percentage_of_BART_wins_probsort: '0.16666666666666666'
-    percentage_of_BART_wins_similsort: '0.16666666666666666'
+    rate_of_BART_wins_probsort: '0.16666666666666666'
+    rate_of_BART_wins_similsort: '0.16666666666666666'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -90,10 +90,10 @@ evaluation_1:
   num_predictions_at_k_counter: '[30, 1]'
   num_probsort_precise_preds: '0'
   num_similsort_precise_preds: '0'
-  percentage_of_better_than_threshold_probsort: '0.0'
-  percentage_of_better_than_threshold_similsort: '0.0'
-  percentage_of_precise_preds_probsort: '0.0'
-  percentage_of_precise_preds_similsort: '0.0'
+  rate_of_better_than_threshold_probsort: '0.0'
+  rate_of_better_than_threshold_similsort: '0.0'
+  rate_of_precise_preds_probsort: '0.0'
+  rate_of_precise_preds_similsort: '0.0'
   start_time_utc: 20/04/2024 10:13:51
   topk_probsort: '[0.08607440076863694, 0.06896551724137931]'
   topk_similsort: '[0.08607440076863694, 0.06896551724137931]'

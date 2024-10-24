@@ -46,8 +46,8 @@ evaluation_0:
     mean_db_score: '0.47010972868476775'
     mean_fpsd_score_probsort: '0.21465837953727623'
     mean_fpsd_score_similsort: '0.3518285823899456'
-    percentage_of_BART_wins_probsort: '0.7382262128686518'
-    percentage_of_BART_wins_similsort: '0.8771338325584697'
+    rate_of_BART_wins_probsort: '0.7382262128686518'
+    rate_of_BART_wins_similsort: '0.8771338325584697'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -68,10 +68,10 @@ evaluation_0:
     22061, 18256, 12320]'
   num_probsort_precise_preds: '10152'
   num_similsort_precise_preds: '16882'
-  percentage_of_better_than_threshold_probsort: '0.442949923696632'
-  percentage_of_better_than_threshold_similsort: '0.657699542179792'
-  percentage_of_precise_preds_probsort: '0.36029385669162795'
-  percentage_of_precise_preds_similsort: '0.5991411434858218'
+  rate_of_better_than_threshold_probsort: '0.442949923696632'
+  rate_of_better_than_threshold_similsort: '0.657699542179792'
+  rate_of_precise_preds_probsort: '0.36029385669162795'
+  rate_of_precise_preds_similsort: '0.5991411434858218'
   start_time_utc: 19/04/2024 08:18:12
   topk_probsort: '[0.6847681082220439, 0.5970268738457967, 0.5577063968027942, 0.5273446975077372,
     0.5065921652616959, 0.48565088050537514, 0.46630825420085953, 0.44608614235538363,
@@ -87,8 +87,8 @@ evaluation_1:
     mean_db_score: '0.39116428833407746'
     mean_fpsd_score_probsort: '0.22719616389580705'
     mean_fpsd_score_similsort: '0.38256469520887615'
-    percentage_of_BART_wins_probsort: '0.7357064272278809'
-    percentage_of_BART_wins_similsort: '0.8742591475316748'
+    rate_of_BART_wins_probsort: '0.7357064272278809'
+    rate_of_BART_wins_similsort: '0.8742591475316748'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -109,10 +109,10 @@ evaluation_1:
     22061, 18256, 12320]'
   num_probsort_precise_preds: '10002'
   num_similsort_precise_preds: '16763'
-  percentage_of_better_than_threshold_probsort: '0.3674983142279164'
-  percentage_of_better_than_threshold_similsort: '0.6026901373460624'
-  percentage_of_precise_preds_probsort: '0.354970365901267'
-  percentage_of_precise_preds_similsort: '0.5949178407921354'
+  rate_of_better_than_threshold_probsort: '0.3674983142279164'
+  rate_of_better_than_threshold_similsort: '0.6026901373460624'
+  rate_of_precise_preds_probsort: '0.354970365901267'
+  rate_of_precise_preds_similsort: '0.5949178407921354'
   start_time_utc: 19/04/2024 11:25:46
   topk_probsort: '[0.6183604522298844, 0.5195326588009858, 0.48043114722990926, 0.45220969258932775,
     0.4360649823409226, 0.4170140926388856, 0.40039773838004866, 0.3808885885576137,

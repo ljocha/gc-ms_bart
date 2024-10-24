@@ -44,10 +44,10 @@ evaluation_0:
         mean_db_score: '0.22742889217712875'
         mean_fpsd_score_probsort: '0.061582908229955'
         mean_fpsd_score_similsort: '0.061582908229955'
-        percentage_of_BART_wins_probsort: '0.6311475409836066'
-        percentage_of_BART_wins_similsort: '0.6311475409836066'
-        percentage_of_ties_probsort: '0.1557377049180328'
-        percentage_of_ties_similsort: '0.11475409836065574'
+        rate_of_BART_wins_probsort: '0.6311475409836066'
+        rate_of_BART_wins_similsort: '0.6311475409836066'
+        rate_of_ties_probsort: '0.1557377049180328'
+        rate_of_ties_similsort: '0.11475409836065574'
         ties:
             mean_tie_simils_probsort: '0.34792321944220883'
             mean_tie_simils_similsort: '0.41898223858306816'
@@ -55,8 +55,8 @@ evaluation_0:
             num_of_ties_simils_equal_to_1_probsort: '4'
             num_of_ties_simils_equal_to_1_similsort: '4'
             num_of_ties_similsort: '28'
-            percentage_of_ties_simils_equal_to_1_probsort: '0.10526315789473684'
-            percentage_of_ties_simils_equal_to_1_similsort: '0.14285714285714285'
+            rate_of_ties_simils_equal_to_1_probsort: '0.10526315789473684'
+            rate_of_ties_simils_equal_to_1_similsort: '0.14285714285714285'
     eval_config:
         do_db_search: true
         filtering_args:
@@ -75,10 +75,10 @@ evaluation_0:
         num_at_least_one_correct_formula: '25'
         num_correct_formulas_at_best_prob: '25'
         num_correct_formulas_at_best_simil: '25'
-        percentage_of_all_correct_formulas: '0.102880658436214'
-        percentage_of_at_least_one_correct_formula: '0.10245901639344263'
-        percentage_of_correct_formulas_at_best_prob: '0.10245901639344263'
-        percentage_of_correct_formulas_at_best_simil: '0.10245901639344263'
+        rate_of_all_correct_formulas: '0.102880658436214'
+        rate_of_at_least_one_correct_formula: '0.10245901639344263'
+        rate_of_correct_formulas_at_best_prob: '0.10245901639344263'
+        rate_of_correct_formulas_at_best_simil: '0.10245901639344263'
     hit_at_k_prob: '[(1, 0.020491803278688523)]'
     labels_path: data/mace/MACE_r05_with_db_index.jsonl
     num_datapoints_tested: '244'
@@ -87,22 +87,22 @@ evaluation_0:
     precise_preds_stats:
         num_precise_preds_probsort: '4'
         num_precise_preds_similsort: '4'
-        percentage_of_precise_preds_probsort: '0.01639344262295082'
-        percentage_of_precise_preds_similsort: '0.01639344262295082'
+        rate_of_precise_preds_probsort: '0.01639344262295082'
+        rate_of_precise_preds_similsort: '0.01639344262295082'
     simil_1_hits:
         counter_multiple_hits: dict_items([(1, 5)])
         num_1_hits_as_first_probsort: '5'
         num_1_hits_as_first_similsort: '5'
         num_fp_simil_fail_prob: '1'
         num_fp_simil_fail_simil: '1'
-        percentage_of_1_hits_as_first_probsort: '0.020491803278688523'
-        percentage_of_1_hits_as_first_similsort: '0.020491803278688523'
+        rate_of_1_hits_as_first_probsort: '0.020491803278688523'
+        rate_of_1_hits_as_first_similsort: '0.020491803278688523'
     start_time_utc: 03/09/2024 15:21:27
     threshold_stats:
         num_better_than_threshold_probsort: '7'
         num_better_than_threshold_similsort: '7'
-        percentage_of_better_than_threshold_probsort: '0.028688524590163935'
-        percentage_of_better_than_threshold_similsort: '0.028688524590163935'
+        rate_of_better_than_threshold_probsort: '0.028688524590163935'
+        rate_of_better_than_threshold_similsort: '0.028688524590163935'
         threshold: '0.85'
     topk_probsort: '[0.28901180040708374]'
     topk_similsort: '[0.28901180040708374]'

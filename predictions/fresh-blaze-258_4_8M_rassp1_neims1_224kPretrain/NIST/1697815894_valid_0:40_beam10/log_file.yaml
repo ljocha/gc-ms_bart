@@ -35,14 +35,14 @@ evaluation_0:
     mean_db_score: '0.407049253883928'
     mean_ssd_score_probsort: '0.2724790189604291'
     mean_ssd_score_similsort: '0.40788063264804253'
-    percentage_of_BART_wins_probsort: '0.75'
-    percentage_of_BART_wins_similsort: '0.9'
+    rate_of_BART_wins_probsort: '0.75'
+    rate_of_BART_wins_similsort: '0.9'
   eval_time: 00:00:01
   num_predictions_at_k_counter: '[40, 40, 40, 40, 40, 38, 37, 34, 34, 23]'
   num_probsort_precise_preds: '13'
   num_similsort_precise_preds: '24'
-  percentage_of_precise_preds_probsort: '0.325'
-  percentage_of_precise_preds_similsort: '0.6'
+  rate_of_precise_preds_probsort: '0.325'
+  rate_of_precise_preds_similsort: '0.6'
   start_time_utc: 20/10/2023 15:32:41
   topk_probsort: '[0.6795282728443571, 0.5984296395922994, 0.5305445048866103, 0.5387291388757932,
     0.5268065274998545, 0.5274322808810635, 0.4764618008520965, 0.5262679076462081,

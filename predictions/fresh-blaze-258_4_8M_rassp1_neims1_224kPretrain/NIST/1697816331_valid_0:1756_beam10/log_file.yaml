@@ -31,15 +31,15 @@ evaluation_0:
     mean_db_score: '0.45062691562310536'
     mean_ssd_score_probsort: '0.21365110164248'
     mean_ssd_score_similsort: '0.3607678347118481'
-    percentage_of_BART_wins_probsort: '0.760250569476082'
-    percentage_of_BART_wins_similsort: '0.8878132118451025'
+    rate_of_BART_wins_probsort: '0.760250569476082'
+    rate_of_BART_wins_similsort: '0.8878132118451025'
   eval_time: 00:00:16
   num_predictions_at_k_counter: '[1756, 1754, 1753, 1749, 1741, 1722, 1691, 1603,
     1420, 1014]'
   num_probsort_precise_preds: '590'
   num_similsort_precise_preds: '1012'
-  percentage_of_precise_preds_probsort: '0.3359908883826879'
-  percentage_of_precise_preds_similsort: '0.5763097949886105'
+  rate_of_precise_preds_probsort: '0.3359908883826879'
+  rate_of_precise_preds_similsort: '0.5763097949886105'
   start_time_utc: 20/10/2023 16:14:12
   topk_probsort: '[0.6642780172655853, 0.591435767417269, 0.5536017091026798, 0.5259529421505736,
     0.5163043109306622, 0.5003517147065674, 0.48313816522545905, 0.4699170794560059,
@@ -55,15 +55,15 @@ evaluation_1:
     mean_db_score: '0.45062691562310536'
     mean_fpsd_score_probsort: '0.21365110164248'
     mean_fpsd_score_similsort: '0.3607678347118481'
-    percentage_of_BART_wins_probsort: '0.760250569476082'
-    percentage_of_BART_wins_similsort: '0.8878132118451025'
+    rate_of_BART_wins_probsort: '0.760250569476082'
+    rate_of_BART_wins_similsort: '0.8878132118451025'
   eval_time: 00:00:16
   num_predictions_at_k_counter: '[1756, 1754, 1753, 1749, 1741, 1722, 1691, 1603,
     1420, 1014]'
   num_probsort_precise_preds: '590'
   num_similsort_precise_preds: '1012'
-  percentage_of_precise_preds_probsort: '0.3359908883826879'
-  percentage_of_precise_preds_similsort: '0.5763097949886105'
+  rate_of_precise_preds_probsort: '0.3359908883826879'
+  rate_of_precise_preds_similsort: '0.5763097949886105'
   start_time_utc: 20/10/2023 16:22:07
   topk_probsort: '[0.6642780172655853, 0.591435767417269, 0.5536017091026798, 0.5259529421505736,
     0.5163043109306622, 0.5003517147065674, 0.48313816522545905, 0.4699170794560059,

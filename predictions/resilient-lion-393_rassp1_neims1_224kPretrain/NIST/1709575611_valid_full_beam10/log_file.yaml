@@ -44,8 +44,8 @@ evaluation_0: # asi nepovedena predikce...
     mean_db_score: '0.47010972868476775'
     mean_fpsd_score_probsort: '-0.3415684533456694'
     mean_fpsd_score_similsort: '-0.3067832151492057'
-    percentage_of_BART_wins_probsort: '0.147212265322781'
-    percentage_of_BART_wins_similsort: '0.2146076587287504'
+    rate_of_BART_wins_probsort: '0.147212265322781'
+    rate_of_BART_wins_similsort: '0.2146076587287504'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -66,10 +66,10 @@ evaluation_0: # asi nepovedena predikce...
     24414, 21493, 15580]'
   num_probsort_precise_preds: '80'
   num_similsort_precise_preds: '140'
-  percentage_of_better_than_threshold_probsort: '0.003797423430457465'
-  percentage_of_better_than_threshold_similsort: '0.005891329807999432'
-  percentage_of_precise_preds_probsort: '0.0028391950881924972'
-  percentage_of_precise_preds_similsort: '0.004968591404336871'
+  rate_of_better_than_threshold_probsort: '0.003797423430457465'
+  rate_of_better_than_threshold_similsort: '0.005891329807999432'
+  rate_of_precise_preds_probsort: '0.0028391950881924972'
+  rate_of_precise_preds_similsort: '0.004968591404336871'
   start_time_utc: 03/04/2024 09:18:48
   topk_probsort: '[0.1285412753390984, 0.12858311567470268, 0.1289513669948863, 0.1299858889010818,
     0.13029496697096818, 0.13070699848590858, 0.13221790979280124, 0.1321824514674253,

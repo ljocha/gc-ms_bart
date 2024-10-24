@@ -19,8 +19,8 @@ evaluation_0:
     mean_db_score: '0.47167943181785554'
     mean_fpsd_score_probsort: '0.19253085740880832'
     mean_fpsd_score_similsort: '0.3297002602188652'
-    percentage_of_BART_wins_probsort: '0.7116293247980491'
-    percentage_of_BART_wins_similsort: '0.862482853223594'
+    rate_of_BART_wins_probsort: '0.7116293247980491'
+    rate_of_BART_wins_similsort: '0.862482853223594'
   eval_config:
     do_db_search: true
     filtering_args:
@@ -41,10 +41,10 @@ evaluation_0:
     22644, 19386, 13054]'
   num_probsort_precise_preds: '8807'
   num_similsort_precise_preds: '14680'
-  percentage_of_better_than_threshold_probsort: '0.4157521719250114'
-  percentage_of_better_than_threshold_similsort: '0.6224660874866637'
-  percentage_of_precise_preds_probsort: '0.3355814662399024'
-  percentage_of_precise_preds_similsort: '0.5593659503124524'
+  rate_of_better_than_threshold_probsort: '0.4157521719250114'
+  rate_of_better_than_threshold_similsort: '0.6224660874866637'
+  rate_of_precise_preds_probsort: '0.3355814662399024'
+  rate_of_precise_preds_similsort: '0.5593659503124524'
   start_time_utc: 02/04/2024 21:26:29
   topk_probsort: '[0.6642102892266638, 0.5803344883443845, 0.5413989667985613, 0.5125757630643721,
     0.48848877061781065, 0.4743438272849441, 0.4591010970685378, 0.44321575997638885,
