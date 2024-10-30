@@ -19,7 +19,7 @@ def discard_other_than_latest_eval(log_dict):
     eval_keys.sort(key=lambda x: int(x.split("_")[1]), reverse=True)
     log_dict["evaluation"] = log_dict[eval_keys[0]]
 
-    for key in eval_keys[1:]:
+    for key in eval_keys:
         del log_dict[key]
 
 
@@ -184,7 +184,7 @@ def compute_mean_differences_for_two_groups(similarity_df, models1, models2):
     return mean_diff_df
 
 
-def compute_db_search_performance(similarity_df, db_search_names):
+def compute_db_search_performance(similarity_df, db_search_names, fp_type="morgan", fp_simil="tanimoto"):
     """Creates a table showing how close is the performance of spectral
     db searches (sss, hss) to the structural db searches (morgan_tanimoto).
     The table contains the rates of structural searches finding the
@@ -193,15 +193,14 @@ def compute_db_search_performance(similarity_df, db_search_names):
     structural_searches = []
     spectral_searches = []
     for name in db_search_names:
-        if "morgan_tanimoto" in name:
+        if f"{fp_type}_{fp_simil}" in name:
             structural_searches.append(name)
         else:
             spectral_searches.append(name)
-
     if not structural_searches or not spectral_searches:
         return None
 
-    _, rate_of_closest_candidates = compute_rate_of_wins_for_two_groups(similarity_df, structural_searches, spectral_searches)
+    _, rate_of_closest_candidates = compute_rate_of_wins_for_two_groups(similarity_df, spectral_searches, structural_searches)
 
     return rate_of_closest_candidates
 
@@ -246,6 +245,13 @@ def get_info_from_logfiles_for_all(log_dicts: Dict[str, Dict], value_paths: List
                 print(f"Error in model {model}: {e}")
                 df.loc[model, name] = None
     return df
+
+
+def sort_all_dfs(dfs_columns: List[tuple]):
+    """Sort all DataFrames in the list by the given column."""
+    for df, column in dfs_columns:
+        if df is not None:
+            df.sort_values(by=column, ascending=False, inplace=True)
 
 
 def compare_models(models_prediction_paths: List[str],
@@ -297,6 +303,12 @@ def compare_models(models_prediction_paths: List[str],
     db_search_names, db_search_dfs, db_search_log_dicts = load_all_predictions(db_search_prediction_paths)
 
     all_predictors, all_dfs = model_names + db_search_names, model_dfs + db_search_dfs
+
+    if len(all_predictors) == 1:
+        raise ValueError("Only one model found - not much to compare. At least two models are required for comparison.")
+    if len(all_predictors) == 0:
+        raise ValueError("No models or database searches found. Specify at least 2 models and or database searches using models_prediction_paths and db_search_prediction_paths.")
+
     all_log_dicts = {k: v for k, v in zip(all_predictors, model_log_dicts + db_search_log_dicts)}
 
     # Validate that ground truth columns are the same across all models
@@ -310,23 +322,37 @@ def compare_models(models_prediction_paths: List[str],
     test_name, stat_probsort, p_value_probsort, nemenyi_prob_probsort = check_significance_of_inequality(probsort_df)
     _, stat_similsort, p_value_similsort, nemenyi_prob_similsort = check_significance_of_inequality(similsort_df)
 
-    mean_simils_df = pd.DataFrame({"Model": similsort_df.columns,
-                                   "probsort_mean_simil": probsort_df.mean().values,
-                                   "similsort_mean_simil": similsort_df.mean().values})
+    mean_simils_df = pd.DataFrame({"similsort_mean_simil": similsort_df.mean().values,
+                                   "probsort_mean_simil": probsort_df.mean().values},
+                                   index=similsort_df.columns)
     exact_matches_df = get_info_from_logfiles_for_all(all_log_dicts,
                                                       ["evaluation/precise_preds_stats/rate_of_precise_preds_probsort",
                                                        "evaluation/precise_preds_stats/rate_of_precise_preds_similsort"] )
 
-    if len(db_search_names) > 0:
+    if len(model_names) > 0 and len(db_search_names) > 0:
         wins_over_db_search_probsort_df, at_least_as_good_probsort_df = compute_rate_of_wins_for_two_groups(probsort_df, model_names, db_search_names)
         wins_over_db_search_similsort_df, at_least_as_good_similsort_df = compute_rate_of_wins_for_two_groups(similsort_df, model_names, db_search_names)
         fpsd_score_probsort_df = compute_mean_differences_for_two_groups(probsort_df, model_names, db_search_names)
         fpsd_score_similsort_df = compute_mean_differences_for_two_groups(similsort_df, model_names, db_search_names)
-        db_search_performance_df = compute_db_search_performance(similsort_df, db_search_names)
     else:
         wins_over_db_search_probsort_df, wins_over_db_search_similsort_df = None, None
         at_least_as_good_probsort_df, at_least_as_good_similsort_df = None, None
         fpsd_score_probsort_df, fpsd_score_similsort_df = None, None
+
+    if len(db_search_names) > 0:
+        db_search_performance_df = compute_db_search_performance(similsort_df, db_search_names, fp_type, fp_simil)
+    else:
+        db_search_performance_df = None
+
+
+    sort_all_dfs([(mean_simils_df, "similsort_mean_simil"),
+                  (exact_matches_df, "rate_of_precise_preds_similsort"),
+                  (wins_over_db_search_probsort_df, wins_over_db_search_probsort_df.columns[0] if wins_over_db_search_probsort_df is not None else ""),
+                  (wins_over_db_search_similsort_df, wins_over_db_search_similsort_df.columns[0] if wins_over_db_search_similsort_df is not None else ""),
+                  (at_least_as_good_probsort_df, at_least_as_good_probsort_df.columns[0] if at_least_as_good_probsort_df is not None else ""),
+                  (at_least_as_good_similsort_df, at_least_as_good_similsort_df.columns[0] if at_least_as_good_similsort_df is not None else ""),
+                  (fpsd_score_probsort_df, fpsd_score_probsort_df.columns[0] if fpsd_score_probsort_df is not None else ""),
+                  (fpsd_score_similsort_df, fpsd_score_similsort_df.columns[0] if fpsd_score_similsort_df is not None else "")])
 
     output = {
         "models": model_names,
@@ -357,8 +383,8 @@ def compare_models(models_prediction_paths: List[str],
 
 @app.command()
 def main(additional_info: str = typer.Option(..., help="Additional information to be added to the output file name."),
-         models_prediction_paths: str = typer.Option(..., help="Paths to the directories containing model predictions separated by any whitespace."),
-         db_search_prediction_paths: str = typer.Option(..., help="Paths to the directories containing database search predictions separated by any whitespace."),
+         models_prediction_paths: str = typer.Option("", help="Paths to the directories containing model predictions separated by any whitespace."),
+         db_search_prediction_paths: str = typer.Option("", help="Paths to the directories containing database search predictions separated by any whitespace."),
          fp_type: str = typer.Option("morgan", help="Fingerprint type used for similarity calculations."),
          fp_simil: str = typer.Option("tanimoto", help="Similarity metric used for similarity calculations.")):
 
@@ -368,22 +394,28 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
     comparison  = compare_models(models_paths_list, db_search_paths_list, fp_type, fp_simil)
     significance_test = comparison["significance_test"]
     # Save results to a file
-    dataset_name = Path(models_paths_list[0]).parent.name
+    one_of_the_paths = Path((models_paths_list + db_search_paths_list)[0])
+    dataset_name = one_of_the_paths.parent.name
     outfile_name = f"model_comparison_on_{dataset_name}{'_' + additional_info if additional_info else ''}.txt"
-    with open(Path(models_paths_list[0]).parent.parent.parent / outfile_name, 'w') as f:
-        f.write("Statistical significance of model comparison\n\n")
+    with open(one_of_the_paths.parent.parent.parent / outfile_name, 'w') as f:
+        f.write("### Statistical significance of model comparison ###\n\n\n".upper())
+        f.write(f"Mean {fp_type} {fp_simil} similarities with ground truth\n")
         f.write(comparison["mean_simils"].to_markdown() + "\n\n")
+        f.write("Exact matches\n")
         f.write(comparison["exact_matches"].to_markdown() + "\n\n")
+        f.write("Results of the statistical test:\n")
+        f.write("--------------------------------\n")
         f.write(f"{significance_test['test_name']} (probsort): statistic={significance_test['stat_probsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_probsort'])}\n")
         f.write(f"{significance_test['test_name']} (similsort): statistic={significance_test['stat_similsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_similsort'])}\n")
         if len(comparison['models']) > 2:
             if significance_test['p_value_probsort'] < 0.05:
-                f.write("\n\nSIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
+                f.write(f"\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
                 f.write(significance_test['nemenyi_probsort'].to_markdown() + "\n")
             if significance_test['p_value_similsort'] < 0.05:
-                f.write("\n\nSIGNIFICANT -> Nemenyi post-hoc test (similsort):\n")
+                f.write(f"\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (similsort):\n")
                 f.write(significance_test['nemenyi_similsort'].to_markdown() + "\n")
-        if comparison['db_searches'] is not None:
+
+        if comparison['db_searches'] and comparison['models']:
             f.write("\n\nRate of wins over database search predictions (probsort):\n")
             f.write(comparison['wins_over_db_search_probsort'].to_markdown() + "\n")
             f.write("\n\nRate of wins over database search predictions (similsort):\n")
@@ -392,13 +424,13 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
             f.write(comparison['at_least_as_good_as_db_search_probsort'].to_markdown() + "\n")
             f.write("\n\nRate of at least as good as database search predictions (similsort):\n")
             f.write(comparison['at_least_as_good_as_db_search_similsort'].to_markdown() + "\n")
-            f.write("\n\nMean difference in similarity to database search predictions (probsort):\n")
+            f.write("\n\nMean difference in similarity to database search predictions (FPSD probsort):\n")
             f.write(comparison['fpsd_score_probsort'].to_markdown() + "\n")
-            f.write("\n\nMean difference in similarity to database search predictions (similsort):\n")
+            f.write("\n\nMean difference in similarity to database search predictions (FPSD similsort):\n")
             f.write(comparison['fpsd_score_similsort'].to_markdown() + "\n")
-            if comparison['db_search_performance'] is not None:
-                f.write("\n\nPerformance of database searches:\n")
-                f.write(comparison['db_search_performance'].to_markdown() + "\n")
+        if comparison['db_search_performance'] is not None:
+            f.write(f"\n\nPerformance of database searches (spectral searches' rate of finding best candidates according to {fp_type} {fp_simil} structural search):\n")
+            f.write(comparison['db_search_performance'].to_markdown() + "\n")
 
 
 if __name__ == "__main__":
