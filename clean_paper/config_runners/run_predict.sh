@@ -1,3 +1,3 @@
-CUDA_VISIBLE_DEVICES=0 python ../predict.py --checkpoint ../checkpoints/finetune_clean/hopeful-rain-557_exp4_rassp_neims_nist/checkpoint-73738 \
+CUDA_VISIBLE_DEVICES=2 python ../predict.py --checkpoint ../checkpoints/finetune_clean/balmy-violet-577_custom_final/checkpoint-147476 \
                                           --output-folder predictions \
-                                          --config-file configs/predict_nist.yaml \
+                                          --config-file configs/predict_nist_test_beam50.yaml \

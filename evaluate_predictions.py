@@ -118,6 +118,7 @@ def main(
     do_save_best_predictions = config.get("save_best_predictions", False)
 
 
+
     data_name, data_split, data_range = parse_predictions_path(predictions_path)
     num_lines_predictions = line_count(predictions_path)
     if data_range:
@@ -158,8 +159,8 @@ def main(
 
     # open files for writing
     parent_dir = predictions_path.parent
-    log_file_path = parent_dir / "log_file.yaml"
     pred_f = predictions_path.open("r")
+    log_file_path = parent_dir / "log_file.yaml"
     log_file = (log_file_path).open("a+")
     fp_simil_fails_simil_f = (parent_dir / f"fp_simil_fails_simil_{fp_simil_args_info}.csv").open("w+")
     fp_simil_fails_prob_f = (parent_dir / f"fp_simil_fails_prob_{fp_simil_args_info}.csv").open("w+")
@@ -186,8 +187,8 @@ def main(
     prob_all_simils = defaultdict(list)   # all simils (list for each ranking - probsort)
     counter_fp_simil_fail_simil = 0 # number of situations when fingerprint similarity is 1 for different molecules (similsort)
     counter_fp_simil_fail_prob = 0 # number of situations when fingerprint similarity is 1 for different molecules (probsort)
-    counter_multiple_hits = defaultdict(lambda: 0) # number of situations when there are multiple hits with similarity 1
-    counter_first_hit_index_probsort = defaultdict(lambda: 0) # number of situations when the first hit has similarity 1
+    counter_multiple_hits = defaultdict(lambda: 0, {1: 0}) # number of situations when there are multiple hits with similarity 1
+    counter_first_hit_index_probsort = defaultdict(lambda: 0, {0: 0}) # number of situations when the first hit has similarity 1
     counter_all_predictions = 0
     counter_all_correct_formulas = 0
     counter_correct_formulas_best_simil = 0
@@ -292,7 +293,6 @@ def main(
                 best_prob_mces = min(candidates_mces[prob_decreasing_index[0]], 10) # min MCES or a default value of threshold 10 (not similar)
                 best_prob_mcess.append(best_prob_mces)
 
-
     # create plots
     hit_at_k_prob = compute_hit_at_k(counter_first_hit_index_probsort, num_lines_predictions)
     print("INFO: Creating plots...")
@@ -347,13 +347,17 @@ def main(
     mw_bests_simil, mw_bests_prob, mw_gts = np.array(mw_bests_simil), np.array(mw_bests_prob), np.array(mw_gts)
     mw_abs_diff_simil = np.abs(mw_bests_simil - mw_gts)
     mw_abs_diff_prob = np.abs(mw_bests_prob - mw_gts)
+    mw_relative_diff_simil = mw_abs_diff_simil / mw_gts
+    mw_relative_diff_prob = mw_abs_diff_prob / mw_gts
 
     simil_average_simil_kth = [mean(simil_all_simils[k]) for k in sorted(simil_all_simils.keys())]
     prob_average_simil_kth = [mean(prob_all_simils[k]) for k in sorted(prob_all_simils.keys())]
     num_predictions_at_k_counter = [len(l[1]) for l in sorted(list(simil_all_simils.items()), key=lambda x: x[0])]
 
+    # load old logs
     with open(log_file_path, "r", encoding="utf-8") as f:
         old_logs = yaml.safe_load(f)
+
     eval_tag = get_eval_tag(old_logs)
     logs = {eval_tag:
                 {"eval_config": config,
@@ -395,8 +399,10 @@ def main(
                                   "rate_of_correct_formulas_at_best_prob": str(counter_correct_formulas_best_prob / num_lines_predictions),
                                   "rate_of_at_least_one_correct_formula": str(counter_at_least_one_correct_formula / num_lines_predictions),
                                  },
-                "molecular_weight_stats": {"mean_mw_difference_best_simil": str(mw_abs_diff_simil.mean()),
-                                           "mean_mw_difference_best_prob": str(mw_abs_diff_prob.mean()),
+                "molecular_weight_stats": {"mean_absolute_mw_difference_best_simil": str(mw_abs_diff_simil.mean()),
+                                           "mean_absolute_mw_difference_best_prob": str(mw_abs_diff_prob.mean()),
+                                           "mean_relative_mw_difference_best_simil": f"{mw_relative_diff_simil.mean():.2%}",
+                                           "mean_relative_mw_difference_best_prob": f"{mw_relative_diff_prob.mean():.2%}",
                                            "rate_of_mw_difference_less_than_1_best_simil": str(sum(mw_abs_diff_simil < 1) / num_lines_predictions),
                                            "rate_of_mw_difference_less_than_1_best_prob": str(sum(mw_abs_diff_prob < 1) / num_lines_predictions),
                                            "rate_of_exact_nominal_mw_simil": str(sum(mw_bests_simil.round() == mw_gts.round()) / num_lines_predictions),

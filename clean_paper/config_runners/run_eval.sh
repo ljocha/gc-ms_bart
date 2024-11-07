@@ -4,7 +4,7 @@
 #                                   --config-file configs/evaluate_mace.yaml
 
 #  NIST
-python evaluate_predictions.py --predictions-path predictions/fearless-wildflower-490_rassp1_neims1_224kPretrain_148k/NIST/1728474233_valid_full_greedy/predictions.jsonl \
+python evaluate_predictions.py --predictions-path predictions/absurd-wildflower-536_exp2_lin_1000/NIST/1728026100_valid_full_greedy/predictions.jsonl \
                                   --labels-path data/nist/valid_with_db_index.jsonl \
                                   --config-file configs/evaluate_nist.yaml
 

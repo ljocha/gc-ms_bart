@@ -11,7 +11,7 @@ filtering_args:
   max_num_peaks: 300
   mol_repr: smiles
 general:
-  additional_naming_info: ''
+  additional_naming_info: '50cand'
   num_candidates: 50
   ranking_function: hss
 start_loading_time: 22/10/2024 17:39:44

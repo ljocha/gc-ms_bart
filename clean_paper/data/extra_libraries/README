@@ -1,0 +1,35 @@
+This dataset was downloaded from https://littlemsandsailing.com/2023/10/free-ei-and-msms-spectra-in-nist-format/ and converted to SDF/MSP with the LIB2NIST tool. Moe details about the datasets in the read_me.pdf attached.
+
+Lib Stats:
+
+SWGDRUG noD
+overlap of swg and nist train: 1557
+overlap of swg and nist test: 191
+overlap of swg and nist valid: 189
+overlap of swg and neims train: 11
+unique swg: 3197
+unique swg without leaks: 1629
+
+Cayman noD
+overlap of lib and nist train: 725
+overlap of lib and nist test: 88
+overlap of lib and nist valid: 89
+overlap of lib and neims train: 6
+unique lib: 1653
+unique lib without leaks: 922
+
+MONA (noD - no deuterium)
+overlap of lib and nist train: 6211
+overlap of lib and nist test: 817
+overlap of lib and nist valid: 772
+overlap of lib and neims train: 15
+unique lib: 8970
+unique lib without leaks: 2744
+
+MONA overlaps with NIST and NEIMS included (also no Deuterium)
+overlap of lib and nist train: 6211
+overlap of lib and nist test: 817
+overlap of lib and nist valid: 772
+overlap of lib and neims train: 15
+unique lib: 8970
+unique lib without leaks: 8970

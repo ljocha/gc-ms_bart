@@ -23,6 +23,28 @@ def discard_other_than_latest_eval(log_dict):
         del log_dict[key]
 
 
+def fix_model_duplicity(models, model_name, log_dicts):
+    """Fix duplicity of model names. If the model name is already used, add
+    additional naming info to all the occurences that don't have it yet and
+    finally add the additional naming info to the current model name.
+    If there is no duplicity match, return the model name unchanged."""
+    change_model_name = False
+    for i, used_name in enumerate(models):
+        if model_name in used_name:
+            change_model_name = True
+            if used_name == model_name:
+                if log_dicts[i]["general"].get("additional_naming_info"):
+                    models[i] = f"{used_name}_{log_dicts[i]['general']['additional_naming_info']}"
+                else:
+                    models[i] = f"{used_name}_{log_dicts[i]['general']['num_candidates']}cands"
+    if change_model_name:
+        if log_dicts[i]["general"].get("additional_naming_info"):
+            model_name = f"{model_name}_{log_dicts[-1]['general']['additional_naming_info']}"
+        else:
+            model_name = f"{model_name}_{log_dicts[-1]['general']['num_candidates']}cands"
+    return model_name
+
+
 def load_predictions(model_dir):
     """Loads log files and prediction data."""
     model_name = Path(model_dir).parent.parent.name
@@ -51,20 +73,21 @@ def load_all_predictions(model_dirs):
     for model_dir in model_dirs:
         try:
             model_name, df, log_dict = load_predictions(model_dir)
-            models.append(model_name)
-            dfs.append(df)
             log_dicts.append(log_dict)
-        except:
-            raise ValueError(f"Problem with loading {model_dir}")
+            dfs.append(df)
+            model_name = fix_model_duplicity(models, model_name, log_dicts)
+            models.append(model_name)
+        except Exception as e:
+            raise ValueError(f"Problem with loading {model_dir}: {repr(e)}")
 
     return models, dfs, log_dicts
 
 
 def validate_ground_truth(dfs):
     """Ensure that all models have the same ground truth (gt_smiles) values."""
-    gt_smiles = dfs[0]['gt_smiles']
+    gt_smiles = dfs[0].get('gt_smiles')
     for i, df in enumerate(dfs[1:], start=1):
-        if not gt_smiles.equals(df['gt_smiles']):
+        if gt_smiles is None or not gt_smiles.equals(df.get('gt_smiles')):
             raise ValueError(f"Ground truth mismatch between models at index 0 and {i}.")
     print("Ground truth columns match across all models.")
 
@@ -117,7 +140,23 @@ def significance_stars(p_value):
         return "not significant"
 
 def check_significance_of_inequality(similarity_df):
-    """Check the significance of the inequality between models."""
+    """Check the significance of the inequality between models.
+
+    Parameters
+    ----------
+    similarity_df: pd.DataFrame
+        DataFrame with gt similarities of all the predictions (rows) for all models (columns).
+
+    Returns
+    -------
+    test_name: str
+        Name of the performed test (Wilcoxon/Friedman).
+    stat: float
+        Test statistic.
+    p_value: float
+        P-value of the test.
+    nemenyi_prob: pd.DataFrame or None
+        Nemenyi post-hoc test results if significant difference, None otherwise."""
 
     num_models = len(similarity_df.columns)
     if num_models < 2:
@@ -201,7 +240,6 @@ def compute_db_search_performance(similarity_df, db_search_names, fp_type="morga
         return None
 
     _, rate_of_closest_candidates = compute_rate_of_wins_for_two_groups(similarity_df, spectral_searches, structural_searches)
-
     return rate_of_closest_candidates
 
 
@@ -341,6 +379,8 @@ def compare_models(models_prediction_paths: List[str],
 
     if len(db_search_names) > 0:
         db_search_performance_df = compute_db_search_performance(similsort_df, db_search_names, fp_type, fp_simil)
+        if db_search_performance_df is not None:
+            sort_all_dfs([])
     else:
         db_search_performance_df = None
 
@@ -352,7 +392,8 @@ def compare_models(models_prediction_paths: List[str],
                   (at_least_as_good_probsort_df, at_least_as_good_probsort_df.columns[0] if at_least_as_good_probsort_df is not None else ""),
                   (at_least_as_good_similsort_df, at_least_as_good_similsort_df.columns[0] if at_least_as_good_similsort_df is not None else ""),
                   (fpsd_score_probsort_df, fpsd_score_probsort_df.columns[0] if fpsd_score_probsort_df is not None else ""),
-                  (fpsd_score_similsort_df, fpsd_score_similsort_df.columns[0] if fpsd_score_similsort_df is not None else "")])
+                  (fpsd_score_similsort_df, fpsd_score_similsort_df.columns[0] if fpsd_score_similsort_df is not None else ""),
+                  (db_search_performance_df, db_search_performance_df.columns[0] if db_search_performance_df is not None else "")])
 
     output = {
         "models": model_names,
@@ -407,7 +448,7 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
         f.write("--------------------------------\n")
         f.write(f"{significance_test['test_name']} (probsort): statistic={significance_test['stat_probsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_probsort'])}\n")
         f.write(f"{significance_test['test_name']} (similsort): statistic={significance_test['stat_similsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_similsort'])}\n")
-        if len(comparison['models']) > 2:
+        if len(comparison['models']) + len(comparison["db_searches"]) > 2:
             if significance_test['p_value_probsort'] < 0.05:
                 f.write(f"\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
                 f.write(significance_test['nemenyi_probsort'].to_markdown() + "\n")
