@@ -6,16 +6,16 @@ data_args:
   dataset_for_choosing_best_model: "RASSP"
   datasets:
     NEIMS:
-      train_path: "data/synth/neims_gen/train.jsonl"
-      valid_path: "data/synth/neims_gen/valid.jsonl"
+      train_path: "data/synth/neims_custom_gen/train.jsonl"
+      valid_path: "data/synth/neims_custom_gen/valid.jsonl"
       weight: 1.0
       limit_train_split: null    # null for full; limit of head from train set chosen for training split
       limit_val_split: 10000     # null for full; limit of head from valid set chosen for validation split
       limit_example_split: 0     # null for full; limit of head chosen for visualized (generated) molecules
       source_token: "<nist>"
     RASSP:
-      train_path: "data/synth/rassp_gen/train.jsonl"
-      valid_path: "data/synth/rassp_gen/valid.jsonl"
+      train_path: "data/synth/rassp_custom_gen/train.jsonl"
+      valid_path: "data/synth/rassp_custom_gen/valid.jsonl"
       weight: 1.0
       limit_train_split: null    # null for full; limit of head from train set chosen for training split
       limit_val_split: 10000     # null for full; limit of head from valid set chosen for validation split
@@ -24,8 +24,8 @@ data_args:
     NIST:
       train_path: "data/nist/train.jsonl"
       valid_path: "data/nist/valid.jsonl"
-      weight: 0.1                # do not use for training
-      limit_train_split: null       # null for full; limit of head from valid set chosen for validation split
+      weight: 0.0                # do not use for training
+      limit_train_split: 0       # null for full; limit of head from valid set chosen for validation split
       limit_val_split: 10000     # null for full; limit of head from valid set chosen for validation split
       limit_example_split: 0     # null for full; limit of head chosen for visualized (generated) molecules
       source_token: "<nist>"
