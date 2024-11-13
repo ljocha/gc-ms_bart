@@ -1,14 +1,24 @@
-# 28177 ./predictions/balmy-violet-577_custom_final/NIST/1730720158_valid_full_greedy/predictions.jsonl
-# 28177 ./predictions/balmy-violet-577_custom_final/NIST/1730720159_valid_full_beam10/predictions.jsonl
-
+# ./predictions/balmy-violet-577_custom_final/NIST/1730720158_test_full_greedy/predictions.jsonl
+# ./predictions/balmy-violet-577_custom_final/NIST/1730754395_test_full_beam50/predictions.jsonl
+# ./predictions/balmy-violet-577_custom_final/NIST/1730720159_test_full_beam10/predictions.jsonl
+# ./predictions/db_search_morgan_tanimoto/NIST/1731490929_test_full_1cand/predictions.jsonl
+# ./predictions/db_search_sss/NIST/1731407440_test_full_50cand/predictions.jsonl
+# ./predictions/db_search_sss/NIST/1731490929_test_full_1cand/predictions.jsonl
+# ./predictions/db_search_sss/NIST/1731490894_test_full_10cand/predictions.jsonl
+# ./predictions/db_search_hss/NIST/1731407440_test_full_50cand/predictions.jsonl
+# ./predictions/db_search_hss/NIST/1731490929_test_full_1cand/predictions.jsonl
+# ./predictions/db_search_hss/NIST/1731490894_test_full_10cand/predictions.jsonl
 python ../compare_models.py \
-                --additional-info all_final \
+                --additional-info all_final_test \
                 --models-prediction-paths \
-                "./predictions/balmy-violet-577_custom_final/NIST/1730720158_valid_full_greedy \
-                ./predictions/balmy-violet-577_custom_final/NIST/1730720159_valid_full_beam10" \
+                "./predictions/balmy-violet-577_custom_final/NIST/1730720158_test_full_greedy \
+./predictions/balmy-violet-577_custom_final/NIST/1730754395_test_full_beam50 \
+./predictions/balmy-violet-577_custom_final/NIST/1730720159_test_full_beam10" \
                 --db-search-prediction-paths \
-                "./predictions/db_search_hss/NIST/1729676322_valid_full_1cand \
-                ./predictions/db_search_morgan_tanimoto/NIST/1729630748_valid_full_1cand \
-                ./predictions/db_search_sss/NIST/1729676364_valid_full_1cand \
-                ./predictions/db_search_hss/NIST/1729676337_valid_full_10cand \
-                ./predictions/db_search_sss/NIST/1729676352_valid_full_10cand"
+                "./predictions/db_search_morgan_tanimoto/NIST/1731490929_test_full_1cand \
+                ./predictions/db_search_sss/NIST/1731407440_test_full_50cand \
+                ./predictions/db_search_sss/NIST/1731490929_test_full_1cand \
+                ./predictions/db_search_sss/NIST/1731490894_test_full_10cand \
+                ./predictions/db_search_hss/NIST/1731407440_test_full_50cand \
+                ./predictions/db_search_hss/NIST/1731490929_test_full_1cand \
+                ./predictions/db_search_hss/NIST/1731490894_test_full_10cand"

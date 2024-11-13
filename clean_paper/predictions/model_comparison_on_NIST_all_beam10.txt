@@ -33,35 +33,35 @@ Mean morgan tanimoto similarities with ground truth
 | db_search_sss                                           |               0.499381 |              0.384342 |
 
 Exact matches
-|                                                         |   rate_of_precise_preds_probsort |   rate_of_precise_preds_similsort |
-|:--------------------------------------------------------|---------------------------------:|----------------------------------:|
-| fearless-wildflower-490_rassp1_neims1_224kPretrain_148k |                        0.384782  |                          0.6215   |
-| balmy-violet-577_custom_final                           |                        0.376726  |                          0.61788  |
-| hardy-bush-576_exp5_custom_one_src_token                |                        0.366114  |                          0.614118 |
-| likely-sea-573_exp7_custom_rassp_neims                  |                        0.361288  |                          0.607375 |
-| valiant-galaxy-574_exp7_custom_rassp_neims_nist         |                        0.363488  |                          0.605636 |
-| effortless-river-558_exp4_rassp_neims                   |                        0.347908  |                          0.598964 |
-| hopeful-rain-557_exp4_rassp_neims_nist                  |                        0.355929  |                          0.597722 |
-| dulcet-cloud-568_exp7_custom_neims                      |                        0.353977  |                          0.597331 |
-| valiant-totem-557_exp4_neims                            |                        0.35025   |                          0.594598 |
-| hearty-leaf-572_exp7_custom_rassp                       |                        0.335096  |                          0.575895 |
-| jolly-lion-562_exp6_45perc_frozen                       |                        0.321006  |                          0.568833 |
-| avid-rain-560_exp4_rassp                                |                        0.322355  |                          0.558754 |
-| smooth-totem-563_exp6_72perc_frozen                     |                        0.299216  |                          0.553501 |
-| gallant-lion-533_exp2_log_29_1.28_exp3_mf10M            |                        0.278738  |                          0.506619 |
-| absurd-wildflower-536_exp2_lin_1000                     |                        0.272137  |                          0.498456 |
-| apricot-frost-534_exp2_log_39_1.2                       |                        0.275579  |                          0.497391 |
-| devout-disco-532_exp2_log_20_1.43                       |                        0.268907  |                          0.495936 |
-| dashing-grass-547_exp3_mf100                            |                        0.241048  |                          0.471803 |
-| fresh-haze-530_exp1_int_emb_exp2_log_9_2.2              |                        0.243816  |                          0.470419 |
-| noble-glitter-546_exp3_mf10K                            |                        0.24197   |                          0.46396  |
-| exalted-elevator-545_exp3_mf10                          |                        0.237996  |                          0.461334 |
-| crisp-meadow-535_exp2_lin_100                           |                        0.233737  |                          0.461227 |
-| devoted-feather-548_exp3_selfies                        |                        0.223587  |                          0.410832 |
-| major-capybara-531_exp1_pos_emb                         |                        0.0960713 |                          0.253079 |
-| db_search_hss                                           |                        0         |                          0        |
-| db_search_morgan_tanimoto                               |                        0         |                          0        |
-| db_search_sss                                           |                        0         |                          0        |
+|                                                         |   rate_of_precise_preds_similsort |   rate_of_precise_preds_probsort |
+|:--------------------------------------------------------|----------------------------------:|---------------------------------:|
+| fearless-wildflower-490_rassp1_neims1_224kPretrain_148k |                          0.6215   |                        0.384782  |
+| balmy-violet-577_custom_final                           |                          0.61788  |                        0.376726  |
+| hardy-bush-576_exp5_custom_one_src_token                |                          0.614118 |                        0.366114  |
+| likely-sea-573_exp7_custom_rassp_neims                  |                          0.607375 |                        0.361288  |
+| valiant-galaxy-574_exp7_custom_rassp_neims_nist         |                          0.605636 |                        0.363488  |
+| effortless-river-558_exp4_rassp_neims                   |                          0.598964 |                        0.347908  |
+| hopeful-rain-557_exp4_rassp_neims_nist                  |                          0.597722 |                        0.355929  |
+| dulcet-cloud-568_exp7_custom_neims                      |                          0.597331 |                        0.353977  |
+| valiant-totem-557_exp4_neims                            |                          0.594598 |                        0.35025   |
+| hearty-leaf-572_exp7_custom_rassp                       |                          0.575895 |                        0.335096  |
+| jolly-lion-562_exp6_45perc_frozen                       |                          0.568833 |                        0.321006  |
+| avid-rain-560_exp4_rassp                                |                          0.558754 |                        0.322355  |
+| smooth-totem-563_exp6_72perc_frozen                     |                          0.553501 |                        0.299216  |
+| gallant-lion-533_exp2_log_29_1.28_exp3_mf10M            |                          0.506619 |                        0.278738  |
+| absurd-wildflower-536_exp2_lin_1000                     |                          0.498456 |                        0.272137  |
+| apricot-frost-534_exp2_log_39_1.2                       |                          0.497391 |                        0.275579  |
+| devout-disco-532_exp2_log_20_1.43                       |                          0.495936 |                        0.268907  |
+| dashing-grass-547_exp3_mf100                            |                          0.471803 |                        0.241048  |
+| fresh-haze-530_exp1_int_emb_exp2_log_9_2.2              |                          0.470419 |                        0.243816  |
+| noble-glitter-546_exp3_mf10K                            |                          0.46396  |                        0.24197   |
+| exalted-elevator-545_exp3_mf10                          |                          0.461334 |                        0.237996  |
+| crisp-meadow-535_exp2_lin_100                           |                          0.461227 |                        0.233737  |
+| devoted-feather-548_exp3_selfies                        |                          0.410832 |                        0.223587  |
+| major-capybara-531_exp1_pos_emb                         |                          0.253079 |                        0.0960713 |
+| db_search_hss                                           |                          0        |                        0         |
+| db_search_morgan_tanimoto                               |                          0        |                        0         |
+| db_search_sss                                           |                          0        |                        0         |
 
 Results of the statistical test:
 --------------------------------

@@ -2,7 +2,7 @@ This dataset was downloaded from https://littlemsandsailing.com/2023/10/free-ei-
 
 Lib Stats:
 
-SWGDRUG noD
+SWGDRUG noD (1679 spectra, 1640 went through filters)
 overlap of swg and nist train: 1557
 overlap of swg and nist test: 191
 overlap of swg and nist valid: 189
@@ -10,7 +10,7 @@ overlap of swg and neims train: 11
 unique swg: 3197
 unique swg without leaks: 1629
 
-Cayman noD
+Cayman noD (964 spectra, 469 went through filters)
 overlap of lib and nist train: 725
 overlap of lib and nist test: 88
 overlap of lib and nist valid: 89
@@ -18,7 +18,7 @@ overlap of lib and neims train: 6
 unique lib: 1653
 unique lib without leaks: 922
 
-MONA (noD - no deuterium)
+MONA (noD - no deuterium, 5293 spectra, 5015 went through filters)
 overlap of lib and nist train: 6211
 overlap of lib and nist test: 817
 overlap of lib and nist valid: 772
@@ -26,7 +26,7 @@ overlap of lib and neims train: 15
 unique lib: 8970
 unique lib without leaks: 2744
 
-MONA overlaps with NIST and NEIMS included (also no Deuterium)
+MONA overlaps with NIST and NEIMS included (also no Deuterium, 18464 spectra, 17812 went through filters)
 overlap of lib and nist train: 6211
 overlap of lib and nist test: 817
 overlap of lib and nist valid: 772

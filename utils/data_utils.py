@@ -136,7 +136,7 @@ def preprocess_datapoint(datadict, source_token, preprocess_args):
 
     out = {"input_ids": [round(mz) for mz in mzs]}
 
-    if not preprocess_args["restrict_intensities"]:
+    if not preprocess_args.get("restrict_intensities"):
         out["position_ids"] = position_ids_creator(intensities,
                                                    preprocess_args["log_base"],
                                                    preprocess_args["log_shift"],

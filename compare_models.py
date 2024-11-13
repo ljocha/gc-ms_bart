@@ -237,6 +237,7 @@ def compute_db_search_performance(similarity_df, db_search_names, fp_type="morga
         else:
             spectral_searches.append(name)
     if not structural_searches or not spectral_searches:
+        print("Found only structural or only spectral searches -> db search performance comparison not possible.")
         return None
 
     _, rate_of_closest_candidates = compute_rate_of_wins_for_two_groups(similarity_df, spectral_searches, structural_searches)
@@ -364,8 +365,8 @@ def compare_models(models_prediction_paths: List[str],
                                    "probsort_mean_simil": probsort_df.mean().values},
                                    index=similsort_df.columns)
     exact_matches_df = get_info_from_logfiles_for_all(all_log_dicts,
-                                                      ["evaluation/precise_preds_stats/rate_of_precise_preds_probsort",
-                                                       "evaluation/precise_preds_stats/rate_of_precise_preds_similsort"] )
+                                                      ["evaluation/precise_preds_stats/rate_of_precise_preds_similsort",
+                                                       "evaluation/precise_preds_stats/rate_of_precise_preds_probsort"] )
 
     if len(model_names) > 0 and len(db_search_names) > 0:
         wins_over_db_search_probsort_df, at_least_as_good_probsort_df = compute_rate_of_wins_for_two_groups(probsort_df, model_names, db_search_names)
@@ -377,10 +378,9 @@ def compare_models(models_prediction_paths: List[str],
         at_least_as_good_probsort_df, at_least_as_good_similsort_df = None, None
         fpsd_score_probsort_df, fpsd_score_similsort_df = None, None
 
+
     if len(db_search_names) > 0:
         db_search_performance_df = compute_db_search_performance(similsort_df, db_search_names, fp_type, fp_simil)
-        if db_search_performance_df is not None:
-            sort_all_dfs([])
     else:
         db_search_performance_df = None
 
@@ -394,6 +394,7 @@ def compare_models(models_prediction_paths: List[str],
                   (fpsd_score_probsort_df, fpsd_score_probsort_df.columns[0] if fpsd_score_probsort_df is not None else ""),
                   (fpsd_score_similsort_df, fpsd_score_similsort_df.columns[0] if fpsd_score_similsort_df is not None else ""),
                   (db_search_performance_df, db_search_performance_df.columns[0] if db_search_performance_df is not None else "")])
+
 
     output = {
         "models": model_names,
@@ -438,7 +439,10 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
     one_of_the_paths = Path((models_paths_list + db_search_paths_list)[0])
     dataset_name = one_of_the_paths.parent.name
     outfile_name = f"model_comparison_on_{dataset_name}{'_' + additional_info if additional_info else ''}.txt"
-    with open(one_of_the_paths.parent.parent.parent / outfile_name, 'w') as f:
+
+    # MARKDOWN OUTPUT
+    outfile_path = one_of_the_paths.parent.parent.parent / outfile_name
+    with open(outfile_path, 'w') as f:
         f.write("### Statistical significance of model comparison ###\n\n\n".upper())
         f.write(f"Mean {fp_type} {fp_simil} similarities with ground truth\n")
         f.write(comparison["mean_simils"].to_markdown() + "\n\n")
@@ -447,17 +451,17 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
         f.write("Results of the statistical test:\n")
         f.write("--------------------------------\n")
         f.write(f"{significance_test['test_name']} (probsort): statistic={significance_test['stat_probsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_probsort'])}\n")
-        f.write(f"{significance_test['test_name']} (similsort): statistic={significance_test['stat_similsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_similsort'])}\n")
+        f.write(f"{significance_test['test_name']} (similsort): statistic={significance_test['stat_similsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_similsort'])}")
         if len(comparison['models']) + len(comparison["db_searches"]) > 2:
             if significance_test['p_value_probsort'] < 0.05:
-                f.write(f"\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
-                f.write(significance_test['nemenyi_probsort'].to_markdown() + "\n")
+                f.write(f"\n\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
+                f.write(significance_test['nemenyi_probsort'].to_markdown())
             if significance_test['p_value_similsort'] < 0.05:
-                f.write(f"\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (similsort):\n")
-                f.write(significance_test['nemenyi_similsort'].to_markdown() + "\n")
+                f.write(f"\n\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (similsort):\n")
+                f.write(significance_test['nemenyi_similsort'].to_markdown())
 
         if comparison['db_searches'] and comparison['models']:
-            f.write("\n\nRate of wins over database search predictions (probsort):\n")
+            f.write("\n\n\nRate of wins over database search predictions (probsort):\n")
             f.write(comparison['wins_over_db_search_probsort'].to_markdown() + "\n")
             f.write("\n\nRate of wins over database search predictions (similsort):\n")
             f.write(comparison['wins_over_db_search_similsort'].to_markdown() + "\n")
@@ -468,10 +472,47 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
             f.write("\n\nMean difference in similarity to database search predictions (FPSD probsort):\n")
             f.write(comparison['fpsd_score_probsort'].to_markdown() + "\n")
             f.write("\n\nMean difference in similarity to database search predictions (FPSD similsort):\n")
-            f.write(comparison['fpsd_score_similsort'].to_markdown() + "\n")
+            f.write(comparison['fpsd_score_similsort'].to_markdown())
         if comparison['db_search_performance'] is not None:
-            f.write(f"\n\nPerformance of database searches (spectral searches' rate of finding best candidates according to {fp_type} {fp_simil} structural search):\n")
-            f.write(comparison['db_search_performance'].to_markdown() + "\n")
+            f.write(f"\n\n\nPerformance of database searches (spectral searches' rate of finding best candidates according to {fp_type} {fp_simil} structural search):\n")
+            f.write(comparison['db_search_performance'].to_markdown())
+
+    # LATEX OUTPUT
+    latex_outfile_path = outfile_path.with_suffix('.tex')
+    with open(latex_outfile_path, 'w') as f:
+        f.write("### Statistical significance of model comparison ###\n\n\n".upper())
+        f.write(f"Mean {fp_type} {fp_simil} similarities with ground truth\n")
+        f.write(comparison["mean_simils"].to_latex() + "\n\n")
+        f.write("Exact matches\n")
+        f.write(comparison["exact_matches"].to_latex() + "\n\n")
+        f.write("Results of the statistical test:\n")
+        f.write("--------------------------------\n")
+        f.write(f"{significance_test['test_name']} (probsort): statistic={significance_test['stat_probsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_probsort'])}\n")
+        f.write(f"{significance_test['test_name']} (similsort): statistic={significance_test['stat_similsort']}, p-value={significance_test['p_value_probsort']}   {significance_stars(significance_test['p_value_similsort'])}")
+        if len(comparison['models']) + len(comparison["db_searches"]) > 2:
+            if significance_test['p_value_probsort'] < 0.05:
+                f.write(f"\n\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (probsort):\n")
+                f.write(significance_test['nemenyi_probsort'].to_latex())
+            if significance_test['p_value_similsort'] < 0.05:
+                f.write(f"\n\n\nThe {significance_test['test_name']} was SIGNIFICANT -> Nemenyi post-hoc test (similsort):\n")
+                f.write(significance_test['nemenyi_similsort'].to_latex())
+
+        if comparison['db_searches'] and comparison['models']:
+            f.write("\n\n\nRate of wins over database search predictions (probsort):\n")
+            f.write(comparison['wins_over_db_search_probsort'].to_latex() + "\n")
+            f.write("\n\nRate of wins over database search predictions (similsort):\n")
+            f.write(comparison['wins_over_db_search_similsort'].to_latex() + "\n")
+            f.write("\n\nRate of at least as good as database search predictions (probsort):\n")
+            f.write(comparison['at_least_as_good_as_db_search_probsort'].to_latex() + "\n")
+            f.write("\n\nRate of at least as good as database search predictions (similsort):\n")
+            f.write(comparison['at_least_as_good_as_db_search_similsort'].to_latex() + "\n")
+            f.write("\n\nMean difference in similarity to database search predictions (FPSD probsort):\n")
+            f.write(comparison['fpsd_score_probsort'].to_latex() + "\n")
+            f.write("\n\nMean difference in similarity to database search predictions (FPSD similsort):\n")
+            f.write(comparison['fpsd_score_similsort'].to_latex())
+        if comparison['db_search_performance'] is not None:
+            f.write(f"\n\n\nPerformance of database searches (spectral searches' rate of finding best candidates according to {fp_type} {fp_simil} structural search):\n")
+            f.write(comparison['db_search_performance'].to_latex())
 
 
 if __name__ == "__main__":

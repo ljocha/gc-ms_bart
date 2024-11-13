@@ -1,0 +1,72 @@
+### STATISTICAL SIGNIFICANCE OF MODEL COMPARISON ###
+
+
+Mean morgan tanimoto similarities with ground truth
+|                                   |   similsort_mean_simil |   probsort_mean_simil |
+|:----------------------------------|-----------------------:|----------------------:|
+| db_search_morgan_tanimoto_50cands |               0.718955 |              0.718955 |
+| db_search_morgan_tanimoto_1cands  |               0.718955 |              0.718955 |
+| db_search_morgan_tanimoto_10cands |               0.718955 |              0.718955 |
+| db_search_hss_50cands             |               0.617451 |              0.448037 |
+| db_search_hss_10cands             |               0.572369 |              0.44808  |
+| db_search_sss_50cands             |               0.546395 |              0.38527  |
+| db_search_sss_10cands             |               0.49986  |              0.385272 |
+| db_search_hss_1cands              |               0.44808  |              0.44808  |
+| db_search_sss_1cands              |               0.385272 |              0.385272 |
+
+Exact matches
+|                                   |   rate_of_precise_preds_similsort |   rate_of_precise_preds_probsort |
+|:----------------------------------|----------------------------------:|---------------------------------:|
+| db_search_morgan_tanimoto_50cands |                                 0 |                                0 |
+| db_search_morgan_tanimoto_1cands  |                                 0 |                                0 |
+| db_search_morgan_tanimoto_10cands |                                 0 |                                0 |
+| db_search_sss_50cands             |                                 0 |                                0 |
+| db_search_sss_1cands              |                                 0 |                                0 |
+| db_search_sss_10cands             |                                 0 |                                0 |
+| db_search_hss_50cands             |                                 0 |                                0 |
+| db_search_hss_1cands              |                                 0 |                                0 |
+| db_search_hss_10cands             |                                 0 |                                0 |
+
+Results of the statistical test:
+--------------------------------
+Friedman test (probsort): statistic=152736.14065309486, p-value=0.0   *** highly significant
+Friedman test (similsort): statistic=152967.4131371675, p-value=0.0   *** highly significant
+
+
+The Friedman test was SIGNIFICANT -> Nemenyi post-hoc test (probsort):
+|                                   |   db_search_morgan_tanimoto_50cands |   db_search_morgan_tanimoto_1cands |   db_search_morgan_tanimoto_10cands |   db_search_sss_50cands |   db_search_sss_1cands |   db_search_sss_10cands |   db_search_hss_50cands |   db_search_hss_1cands |   db_search_hss_10cands |
+|:----------------------------------|------------------------------------:|-----------------------------------:|------------------------------------:|------------------------:|-----------------------:|------------------------:|------------------------:|-----------------------:|------------------------:|
+| db_search_morgan_tanimoto_50cands |                               1     |                              0.9   |                               0.9   |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_morgan_tanimoto_1cands  |                               0.9   |                              1     |                               0.9   |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_morgan_tanimoto_10cands |                               0.9   |                              0.9   |                               1     |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_50cands             |                               0.001 |                              0.001 |                               0.001 |                   1     |                  0.9   |                   0.9   |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_1cands              |                               0.001 |                              0.001 |                               0.001 |                   0.9   |                  1     |                   0.9   |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_10cands             |                               0.001 |                              0.001 |                               0.001 |                   0.9   |                  0.9   |                   1     |                   0.001 |                  0.001 |                   0.001 |
+| db_search_hss_50cands             |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   1     |                  0.9   |                   0.9   |
+| db_search_hss_1cands              |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   0.9   |                  1     |                   0.9   |
+| db_search_hss_10cands             |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   0.9   |                  0.9   |                   1     |
+
+
+The Friedman test was SIGNIFICANT -> Nemenyi post-hoc test (similsort):
+|                                   |   db_search_morgan_tanimoto_50cands |   db_search_morgan_tanimoto_1cands |   db_search_morgan_tanimoto_10cands |   db_search_sss_50cands |   db_search_sss_1cands |   db_search_sss_10cands |   db_search_hss_50cands |   db_search_hss_1cands |   db_search_hss_10cands |
+|:----------------------------------|------------------------------------:|-----------------------------------:|------------------------------------:|------------------------:|-----------------------:|------------------------:|------------------------:|-----------------------:|------------------------:|
+| db_search_morgan_tanimoto_50cands |                               1     |                              0.9   |                               0.9   |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_morgan_tanimoto_1cands  |                               0.9   |                              1     |                               0.9   |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_morgan_tanimoto_10cands |                               0.9   |                              0.9   |                               1     |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_50cands             |                               0.001 |                              0.001 |                               0.001 |                   1     |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_1cands              |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  1     |                   0.001 |                   0.001 |                  0.001 |                   0.001 |
+| db_search_sss_10cands             |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   1     |                   0.001 |                  0.001 |                   0.001 |
+| db_search_hss_50cands             |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   1     |                  0.001 |                   0.001 |
+| db_search_hss_1cands              |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  1     |                   0.001 |
+| db_search_hss_10cands             |                               0.001 |                              0.001 |                               0.001 |                   0.001 |                  0.001 |                   0.001 |                   0.001 |                  0.001 |                   1     |
+
+
+Performance of database searches (spectral searches' rate of finding best candidates according to morgan tanimoto structural search):
+|                       |   db_search_morgan_tanimoto_50cands |   db_search_morgan_tanimoto_1cands |   db_search_morgan_tanimoto_10cands |
+|:----------------------|------------------------------------:|-----------------------------------:|------------------------------------:|
+| db_search_hss_50cands |                            0.449959 |                           0.449959 |                            0.449959 |
+| db_search_hss_10cands |                            0.354972 |                           0.354972 |                            0.354972 |
+| db_search_sss_50cands |                            0.293664 |                           0.293664 |                            0.293664 |
+| db_search_sss_10cands |                            0.231507 |                           0.231507 |                            0.231507 |
+| db_search_hss_1cands  |                            0.187604 |                           0.187604 |                            0.187604 |
+| db_search_sss_1cands  |                            0.124774 |                           0.124774 |                            0.124774 |

@@ -4,8 +4,8 @@
 #                                   --config-file configs/evaluate_mace.yaml
 
 #  NIST
-python evaluate_predictions.py --predictions-path predictions/absurd-wildflower-536_exp2_lin_1000/NIST/1728026100_valid_full_greedy/predictions.jsonl \
-                                  --labels-path data/nist/valid_with_db_index.jsonl \
+python evaluate_predictions.py --predictions-path ./predictions/balmy-violet-577_custom_final/NIST/1730754395_test_full_beam50/predictions.jsonl \
+                                  --labels-path data/nist/test_with_db_index.jsonl \
                                   --config-file configs/evaluate_nist.yaml
 
 #  db search

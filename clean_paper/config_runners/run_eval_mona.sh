@@ -14,8 +14,6 @@ PREDICTIONS=(./predictions/balmy-violet-577_custom_final/MONA_GCMS/1730895666_al
             ./predictions/db_search_hss/MONA_GCMS/1730984558_all_full_1cand/predictions.jsonl \
 )
 
-PREDICTIONS=()
-
 # Correct for loop with proper array reference
 for prediction in "${PREDICTIONS[@]}" ; do
     echo "Processing prediction: $prediction `wc -l $prediction`"

@@ -293,6 +293,13 @@ def main(
                 best_prob_mces = min(candidates_mces[prob_decreasing_index[0]], 10) # min MCES or a default value of threshold 10 (not similar)
                 best_prob_mcess.append(best_prob_mces)
 
+    # check correct length of predictions (thee are no more labels)
+    try:
+        next(labels_iterator)
+        raise ValueError("Number of predictions does not match the number of labels")
+    except StopIteration:
+        pass
+
     # create plots
     hit_at_k_prob = compute_hit_at_k(counter_first_hit_index_probsort, num_lines_predictions)
     print("INFO: Creating plots...")

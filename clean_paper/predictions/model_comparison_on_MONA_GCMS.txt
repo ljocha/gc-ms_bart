@@ -16,18 +16,18 @@ Mean morgan tanimoto similarities with ground truth
 | db_search_sss_1cands                 |               0.256754 |              0.256754 |
 
 Exact matches
-|                                      |   rate_of_precise_preds_probsort |   rate_of_precise_preds_similsort |
-|:-------------------------------------|---------------------------------:|----------------------------------:|
-| balmy-violet-577_custom_final_beam50 |                         0.186042 |                          0.3667   |
-| balmy-violet-577_custom_final_beam10 |                         0.186441 |                          0.328614 |
-| balmy-violet-577_custom_final_greedy |                         0.19322  |                          0.19322  |
-| db_search_morgan_tanimoto            |                         0        |                          0        |
-| db_search_sss_10cands                |                         0        |                          0        |
-| db_search_sss_50cands                |                         0        |                          0        |
-| db_search_sss_1cands                 |                         0        |                          0        |
-| db_search_hss_10cands                |                         0        |                          0        |
-| db_search_hss_50cands                |                         0        |                          0        |
-| db_search_hss_1cands                 |                         0        |                          0        |
+|                                      |   rate_of_precise_preds_similsort |   rate_of_precise_preds_probsort |
+|:-------------------------------------|----------------------------------:|---------------------------------:|
+| balmy-violet-577_custom_final_beam50 |                          0.3667   |                         0.186042 |
+| balmy-violet-577_custom_final_beam10 |                          0.328614 |                         0.186441 |
+| balmy-violet-577_custom_final_greedy |                          0.19322  |                         0.19322  |
+| db_search_morgan_tanimoto            |                          0        |                         0        |
+| db_search_sss_10cands                |                          0        |                         0        |
+| db_search_sss_50cands                |                          0        |                         0        |
+| db_search_sss_1cands                 |                          0        |                         0        |
+| db_search_hss_10cands                |                          0        |                         0        |
+| db_search_hss_50cands                |                          0        |                         0        |
+| db_search_hss_1cands                 |                          0        |                         0        |
 
 Results of the statistical test:
 --------------------------------

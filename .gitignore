@@ -20,6 +20,7 @@ zia_training_stuff
 zia_training_stuff_30M/*
 deprecated/*
 RLHF/**
+FastEI/**
 
 # meta logs
 **/BARTSpektro_experiment*

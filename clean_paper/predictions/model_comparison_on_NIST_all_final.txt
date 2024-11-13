@@ -98,7 +98,7 @@ Mean difference in similarity to database search predictions (FPSD similsort):
 Performance of database searches (spectral searches' rate of finding best candidates according to morgan tanimoto structural search):
 |                      |   db_search_morgan_tanimoto |
 |:---------------------|----------------------------:|
-| db_search_hss_1cand  |                    0.185683 |
-| db_search_sss_1cand  |                    0.12315  |
 | db_search_hss_10cand |                    0.356638 |
 | db_search_sss_10cand |                    0.235014 |
+| db_search_hss_1cand  |                    0.185683 |
+| db_search_sss_1cand  |                    0.12315  |

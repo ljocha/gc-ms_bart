@@ -18,9 +18,7 @@ python ../compare_models.py \
                 ./predictions/balmy-violet-577_custom_final/Cayman_library/1730892786_all_full_beam10
                 ./predictions/balmy-violet-577_custom_final/Cayman_library/1730893023_all_full_greedy" \
                 --db-search-prediction-paths \
-                "./predictions/db_search_morgan_tanimoto/Cayman_library/1730902974_all_full_50cand
-                ./predictions/db_search_morgan_tanimoto/Cayman_library/1730911189_all_full_10cand
-                ./predictions/db_search_morgan_tanimoto/Cayman_library/1730911145_all_full_1cand
+                "./predictions/db_search_morgan_tanimoto/Cayman_library/1730911145_all_full_1cand
                 ./predictions/db_search_sss/Cayman_library/1730902974_all_full_50cand
                 ./predictions/db_search_sss/Cayman_library/1730911189_all_full_10cand
                 ./predictions/db_search_sss/Cayman_library/1730911145_all_full_1cand
