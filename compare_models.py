@@ -23,26 +23,56 @@ def discard_other_than_latest_eval(log_dict):
         del log_dict[key]
 
 
-def fix_model_duplicity(models, model_name, log_dicts):
+def fix_model_duplicity(models, new_model_name, log_dicts):
     """Fix duplicity of model names. If the model name is already used, add
-    additional naming info to all the occurences that don't have it yet and
-    finally add the additional naming info to the current model name.
-    If there is no duplicity match, return the model name unchanged."""
-    change_model_name = False
-    for i, used_name in enumerate(models):
-        if model_name in used_name:
-            change_model_name = True
-            if used_name == model_name:
-                if log_dicts[i]["general"].get("additional_naming_info"):
-                    models[i] = f"{used_name}_{log_dicts[i]['general']['additional_naming_info']}"
-                else:
-                    models[i] = f"{used_name}_{log_dicts[i]['general']['num_candidates']}cands"
-    if change_model_name:
-        if log_dicts[i]["general"].get("additional_naming_info"):
-            model_name = f"{model_name}_{log_dicts[-1]['general']['additional_naming_info']}"
-        else:
-            model_name = f"{model_name}_{log_dicts[-1]['general']['num_candidates']}cands"
-    return model_name
+    more info to all the occurences that don't have it yet and
+    If there is no duplicity match, return the model name unchanged.
+
+    The priority of added info is: 1. additional_naming_info, 2. dataset, 3. num_candidates
+
+    Parameters
+    ----------
+    models: list
+        List of model names.
+    new_model_name: str
+        New model name.
+    log_dicts: list
+        List of log dictionaries corresponding to the models.
+
+    Returns
+    -------
+    new_model_name: str
+        Fixed model name without duplicity.
+    """
+    duplicate_names = [(i, name) for i, name in enumerate(models) if new_model_name in name]
+
+    if not duplicate_names:
+        return new_model_name
+
+    duplicate_names.append((-1, new_model_name))
+
+    additional_infos = [log_dict["general"].get("additional_naming_info") for log_dict in log_dicts]
+    datasets = [log_dict["dataset"].get("dataset_name") for log_dict in log_dicts]
+    num_candidates = [log_dict["general"].get("num_candidates") for log_dict in log_dicts]
+
+    # check if additional_naming_info will distinguishes the models
+    if None not in additional_infos and len(additional_infos) == len(set(additional_infos)): # all are unique and not None
+        new_infos = additional_infos
+    # check if dataset will distinguishes the models
+    elif len(datasets) == len(set(datasets)):
+        new_infos = datasets
+    elif len(num_candidates) == len(set(num_candidates)):
+        new_infos = num_candidates
+    else:
+        new_infos = [f"{ai}_{ds}_{nc}" for ai, ds, nc in zip(additional_infos, datasets, num_candidates)]
+        print("Warning: The model names might not be unique. Additional info, dataset and num_candidates are not unique, adding all of them to the model names.")
+
+    for (i, used_name), new_info in zip(duplicate_names[:-1], new_infos[:-1]):
+        if new_info in used_name:
+            continue
+        models[i] = f"{used_name}_{new_info}"
+
+    return f"{duplicate_names[-1][1]}_{new_infos[-1]}"
 
 
 def load_predictions(model_dir):
@@ -253,7 +283,11 @@ def get_info_from_logfile(log_dict: dict, value_path: str):
         if not value:
             raise ValueError(f"Value {key} at path {value_path} not found in the log file.")
 
-    value = ast.literal_eval(str(value))
+    try:
+        value = ast.literal_eval(str(value))
+    except (ValueError, SyntaxError):
+        pass
+
     assert isinstance(value, (str, int, float)), f"Value at path {value_path} is not a string, int or float."
     return value
 
@@ -293,8 +327,14 @@ def sort_all_dfs(dfs_columns: List[tuple]):
             df.sort_values(by=column, ascending=False, inplace=True)
 
 
-def compare_models(models_prediction_paths: List[str],
-                   db_search_prediction_paths: Union[List[str], None],
+def compare_log_dicts(models_prediction_paths, value_paths: List[str]):
+    model_names, _, model_log_dicts = load_all_predictions(models_prediction_paths)
+    named_log_dicts = {k: v for k, v in zip(model_names, model_log_dicts)}
+    return get_info_from_logfiles_for_all(named_log_dicts, value_paths)
+
+
+def compare_models(models_prediction_paths: Union[List[str], None] = None,
+                   db_search_prediction_paths: Union[List[str], None] = None,
                    fp_type: str = "morgan",
                    fp_simil: str = "tanimoto"):
     """
@@ -341,21 +381,21 @@ def compare_models(models_prediction_paths: List[str],
     model_names, model_dfs, model_log_dicts = load_all_predictions(models_prediction_paths)
     db_search_names, db_search_dfs, db_search_log_dicts = load_all_predictions(db_search_prediction_paths)
 
-    all_predictors, all_dfs = model_names + db_search_names, model_dfs + db_search_dfs
+    all_predictors_names, all_dfs = model_names + db_search_names, model_dfs + db_search_dfs
 
-    if len(all_predictors) == 1:
+    if len(all_predictors_names) == 1:
         raise ValueError("Only one model found - not much to compare. At least two models are required for comparison.")
-    if len(all_predictors) == 0:
+    if len(all_predictors_names) == 0:
         raise ValueError("No models or database searches found. Specify at least 2 models and or database searches using models_prediction_paths and db_search_prediction_paths.")
 
-    all_log_dicts = {k: v for k, v in zip(all_predictors, model_log_dicts + db_search_log_dicts)}
+    all_log_dicts = {k: v for k, v in zip(all_predictors_names, model_log_dicts + db_search_log_dicts)}
 
     # Validate that ground truth columns are the same across all models
     validate_ground_truth(all_dfs)
 
     # Create two DataFrames: one for 'prob_best_simil_{fp_type}_{fp_simil}', one for 'simil_best_simil_{fp_type}_{fp_simil}'
-    probsort_df = create_all_similarities_dataframe(all_dfs, all_predictors, f'prob_best_simil_{fp_type}_{fp_simil}')
-    similsort_df = create_all_similarities_dataframe(all_dfs, all_predictors, f'simil_best_simil_{fp_type}_{fp_simil}')
+    probsort_df = create_all_similarities_dataframe(all_dfs, all_predictors_names, f'prob_best_simil_{fp_type}_{fp_simil}')
+    similsort_df = create_all_similarities_dataframe(all_dfs, all_predictors_names, f'simil_best_simil_{fp_type}_{fp_simil}')
 
     # do significance test for probsort and similsort
     test_name, stat_probsort, p_value_probsort, nemenyi_prob_probsort = check_significance_of_inequality(probsort_df)

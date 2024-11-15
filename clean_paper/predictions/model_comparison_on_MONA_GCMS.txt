@@ -5,7 +5,6 @@ Mean morgan tanimoto similarities with ground truth
 |                                      |   similsort_mean_simil |   probsort_mean_simil |
 |:-------------------------------------|-----------------------:|----------------------:|
 | db_search_morgan_tanimoto            |               0.702518 |              0.702518 |
-| balmy-violet-577_custom_final_beam50 |               0.570272 |              0.397077 |
 | balmy-violet-577_custom_final_beam10 |               0.525996 |              0.396955 |
 | db_search_hss_50cands                |               0.47323  |              0.270614 |
 | db_search_sss_50cands                |               0.43651  |              0.25677  |
