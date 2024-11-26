@@ -76,9 +76,9 @@ Rate of wins over database search predictions (probsort):
 Rate of wins over database search predictions (similsort):
 |                                      |   db_search_morgan_tanimoto |   db_search_sss_50cands |   db_search_sss_1cands |   db_search_sss_10cands |   db_search_hss_50cands |   db_search_hss_1cands |   db_search_hss_10cands |
 |:-------------------------------------|----------------------------:|------------------------:|-----------------------:|------------------------:|------------------------:|-----------------------:|------------------------:|
-| balmy-violet-577_custom_final_beam50 |                    0.606891 |                0.778753 |               0.888563 |                0.815757 |                0.724131 |               0.853504 |                0.767255 |
-| balmy-violet-577_custom_final_beam10 |                    0.544876 |                0.727881 |               0.868787 |                0.774578 |                0.661513 |               0.827184 |                0.713871 |
 | balmy-violet-577_custom_final_greedy |                    0.33272  |                0.503768 |               0.722503 |                0.570382 |                0.428945 |               0.669155 |                0.49227  |
+| balmy-violet-577_custom_final_beam10 |                    0.544876 |                0.727881 |               0.868787 |                0.774578 |                0.661513 |               0.827184 |                0.713871 |
+| balmy-violet-577_custom_final_beam50 |                    0.606891 |                0.778753 |               0.888563 |                0.815757 |                0.724131 |               0.853504 |                0.767255 |
 
 
 Rate of at least as good as database search predictions (probsort):
@@ -92,9 +92,9 @@ Rate of at least as good as database search predictions (probsort):
 Rate of at least as good as database search predictions (similsort):
 |                                      |   db_search_morgan_tanimoto |   db_search_sss_50cands |   db_search_sss_1cands |   db_search_sss_10cands |   db_search_hss_50cands |   db_search_hss_1cands |   db_search_hss_10cands |
 |:-------------------------------------|----------------------------:|------------------------:|-----------------------:|------------------------:|------------------------:|-----------------------:|------------------------:|
-| balmy-violet-577_custom_final_beam50 |                    0.753741 |                0.910178 |               0.975272 |                0.936711 |                0.866204 |               0.959529 |                0.904093 |
-| balmy-violet-577_custom_final_beam10 |                    0.693211 |                0.864577 |               0.959776 |                0.901511 |                0.807691 |               0.9371   |                0.855768 |
 | balmy-violet-577_custom_final_greedy |                    0.471221 |                0.65932  |               0.861146 |                0.723352 |                0.577812 |               0.812113 |                0.642764 |
+| balmy-violet-577_custom_final_beam10 |                    0.693211 |                0.864577 |               0.959776 |                0.901511 |                0.807691 |               0.9371   |                0.855768 |
+| balmy-violet-577_custom_final_beam50 |                    0.753741 |                0.910178 |               0.975272 |                0.936711 |                0.866204 |               0.959529 |                0.904093 |
 
 
 Mean difference in similarity to database search predictions (FPSD probsort):

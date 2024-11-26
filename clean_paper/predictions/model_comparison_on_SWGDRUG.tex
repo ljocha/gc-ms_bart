@@ -1,0 +1,186 @@
+### STATISTICAL SIGNIFICANCE OF MODEL COMPARISON ###
+
+
+Mean morgan tanimoto similarities with ground truth
+\begin{tabular}{lrr}
+\toprule
+ & similsort_mean_simil & probsort_mean_simil \\
+\midrule
+balmy-violet-577_custom_final_beam50 & 0.847591 & 0.651368 \\
+balmy-violet-577_custom_final_beam10 & 0.806216 & 0.662727 \\
+db_search_morgan_tanimoto_50cands & 0.684813 & 0.684813 \\
+db_search_morgan_tanimoto_10cands & 0.684813 & 0.684813 \\
+db_search_morgan_tanimoto_1cands & 0.684813 & 0.684813 \\
+balmy-violet-577_custom_final_greedy & 0.663450 & 0.663450 \\
+db_search_hss_50cands & 0.610416 & 0.458814 \\
+db_search_hss_10cands & 0.578602 & 0.458830 \\
+db_search_sss_50cands & 0.498798 & 0.344138 \\
+db_search_hss_1cands & 0.458830 & 0.458830 \\
+db_search_sss_10cands & 0.455527 & 0.344309 \\
+db_search_sss_1cands & 0.344309 & 0.344309 \\
+\bottomrule
+\end{tabular}
+
+
+Exact matches
+\begin{tabular}{lll}
+\toprule
+ & rate_of_precise_preds_similsort & rate_of_precise_preds_probsort \\
+\midrule
+balmy-violet-577_custom_final_beam50 & 0.617073 & 0.283537 \\
+balmy-violet-577_custom_final_beam10 & 0.553049 & 0.309146 \\
+balmy-violet-577_custom_final_greedy & 0.322561 & 0.322561 \\
+db_search_morgan_tanimoto_50cands & 0.000000 & 0.000000 \\
+db_search_morgan_tanimoto_10cands & 0.000000 & 0.000000 \\
+db_search_morgan_tanimoto_1cands & 0.000000 & 0.000000 \\
+db_search_hss_50cands & 0.000000 & 0.000000 \\
+db_search_hss_10cands & 0.000000 & 0.000000 \\
+db_search_hss_1cands & 0.000000 & 0.000000 \\
+db_search_sss_50cands & 0.000000 & 0.000000 \\
+db_search_sss_10cands & 0.000000 & 0.000000 \\
+db_search_sss_1cands & 0.000000 & 0.000000 \\
+\bottomrule
+\end{tabular}
+
+
+Results of the statistical test:
+--------------------------------
+Friedman test (probsort): statistic=8981.61965450017, p-value=0.0   *** highly significant
+Friedman test (similsort): statistic=9962.550733245695, p-value=0.0   *** highly significant
+
+
+The Friedman test was SIGNIFICANT -> Nemenyi post-hoc test (probsort):
+\begin{tabular}{lrrrrrrrrrrrr}
+\toprule
+ & balmy-violet-577_custom_final_greedy & balmy-violet-577_custom_final_beam10 & balmy-violet-577_custom_final_beam50 & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_greedy & 1.000000 & 0.900000 & 0.817230 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+balmy-violet-577_custom_final_beam10 & 0.900000 & 1.000000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+balmy-violet-577_custom_final_beam50 & 0.817230 & 0.900000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_50cands & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.900000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_10cands & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 1.000000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_1cands & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 0.900000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_50cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.900000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_10cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 1.000000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_1cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 0.900000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_sss_50cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.900000 & 0.900000 \\
+db_search_sss_10cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 1.000000 & 0.900000 \\
+db_search_sss_1cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 0.900000 & 1.000000 \\
+\bottomrule
+\end{tabular}
+
+
+
+The Friedman test was SIGNIFICANT -> Nemenyi post-hoc test (similsort):
+\begin{tabular}{lrrrrrrrrrrrr}
+\toprule
+ & balmy-violet-577_custom_final_greedy & balmy-violet-577_custom_final_beam10 & balmy-violet-577_custom_final_beam50 & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_greedy & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.789845 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+balmy-violet-577_custom_final_beam10 & 0.001000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+balmy-violet-577_custom_final_beam50 & 0.001000 & 0.001000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_50cands & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.900000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_10cands & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 1.000000 & 0.900000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_morgan_tanimoto_1cands & 0.001000 & 0.001000 & 0.001000 & 0.900000 & 0.900000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_50cands & 0.789845 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_10cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_hss_1cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.001000 & 0.001000 & 0.001000 \\
+db_search_sss_50cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.001000 & 0.001000 \\
+db_search_sss_10cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 & 0.001000 \\
+db_search_sss_1cands & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 0.001000 & 1.000000 \\
+\bottomrule
+\end{tabular}
+
+
+
+Rate of wins over database search predictions (probsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_greedy & 0.402439 & 0.402439 & 0.402439 & 0.706098 & 0.706098 & 0.706098 & 0.798171 & 0.798171 & 0.798171 \\
+balmy-violet-577_custom_final_beam10 & 0.391463 & 0.391463 & 0.391463 & 0.706098 & 0.706098 & 0.706098 & 0.800000 & 0.800000 & 0.800000 \\
+balmy-violet-577_custom_final_beam50 & 0.370732 & 0.370732 & 0.370732 & 0.688415 & 0.688415 & 0.688415 & 0.796951 & 0.796951 & 0.796951 \\
+\bottomrule
+\end{tabular}
+
+
+
+Rate of wins over database search predictions (similsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_beam50 & 0.740244 & 0.740244 & 0.740244 & 0.825610 & 0.847561 & 0.910366 & 0.887805 & 0.910366 & 0.946341 \\
+balmy-violet-577_custom_final_beam10 & 0.662195 & 0.662195 & 0.662195 & 0.762805 & 0.797561 & 0.872561 & 0.844512 & 0.868902 & 0.916463 \\
+balmy-violet-577_custom_final_greedy & 0.402439 & 0.402439 & 0.402439 & 0.501220 & 0.546951 & 0.706098 & 0.645122 & 0.690854 & 0.798171 \\
+\bottomrule
+\end{tabular}
+
+
+
+Rate of at least as good as database search predictions (probsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_greedy & 0.453659 & 0.453659 & 0.453659 & 0.787805 & 0.787805 & 0.787805 & 0.890244 & 0.890244 & 0.890244 \\
+balmy-violet-577_custom_final_beam10 & 0.443902 & 0.443902 & 0.443902 & 0.783537 & 0.783537 & 0.783537 & 0.888415 & 0.888415 & 0.888415 \\
+balmy-violet-577_custom_final_beam50 & 0.421341 & 0.421341 & 0.421341 & 0.764024 & 0.764024 & 0.764024 & 0.881098 & 0.881098 & 0.881098 \\
+\bottomrule
+\end{tabular}
+
+
+
+Rate of at least as good as database search predictions (similsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_beam50 & 0.789634 & 0.789634 & 0.789634 & 0.873171 & 0.893902 & 0.948780 & 0.932317 & 0.952439 & 0.980488 \\
+balmy-violet-577_custom_final_beam10 & 0.710366 & 0.710366 & 0.710366 & 0.815244 & 0.847561 & 0.920732 & 0.896951 & 0.921341 & 0.964024 \\
+balmy-violet-577_custom_final_greedy & 0.453659 & 0.453659 & 0.453659 & 0.560366 & 0.614634 & 0.787805 & 0.718293 & 0.768902 & 0.890244 \\
+\bottomrule
+\end{tabular}
+
+
+
+Mean difference in similarity to database search predictions (FPSD probsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_greedy & -0.021363 & -0.021363 & -0.021363 & 0.204635 & 0.204620 & 0.204620 & 0.319311 & 0.319141 & 0.319141 \\
+balmy-violet-577_custom_final_beam10 & -0.022086 & -0.022086 & -0.022086 & 0.203912 & 0.203897 & 0.203897 & 0.318588 & 0.318418 & 0.318418 \\
+balmy-violet-577_custom_final_beam50 & -0.033445 & -0.033445 & -0.033445 & 0.192553 & 0.192537 & 0.192537 & 0.307229 & 0.307059 & 0.307059 \\
+\bottomrule
+\end{tabular}
+
+
+
+Mean difference in similarity to database search predictions (FPSD similsort):
+\begin{tabular}{llllllllll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands & db_search_hss_50cands & db_search_hss_10cands & db_search_hss_1cands & db_search_sss_50cands & db_search_sss_10cands & db_search_sss_1cands \\
+\midrule
+balmy-violet-577_custom_final_beam50 & 0.162778 & 0.162778 & 0.162778 & 0.237175 & 0.268989 & 0.388761 & 0.348793 & 0.392064 & 0.503282 \\
+balmy-violet-577_custom_final_beam10 & 0.121403 & 0.121403 & 0.121403 & 0.195799 & 0.227613 & 0.347386 & 0.307418 & 0.350689 & 0.461907 \\
+balmy-violet-577_custom_final_greedy & -0.021363 & -0.021363 & -0.021363 & 0.053033 & 0.084847 & 0.204620 & 0.164652 & 0.207923 & 0.319141 \\
+\bottomrule
+\end{tabular}
+
+
+
+Performance of database searches (spectral searches' rate of finding best candidates according to morgan tanimoto structural search):
+\begin{tabular}{llll}
+\toprule
+ & db_search_morgan_tanimoto_50cands & db_search_morgan_tanimoto_10cands & db_search_morgan_tanimoto_1cands \\
+\midrule
+db_search_hss_50cands & 0.552439 & 0.552439 & 0.552439 \\
+db_search_hss_10cands & 0.470732 & 0.470732 & 0.470732 \\
+db_search_sss_50cands & 0.292683 & 0.292683 & 0.292683 \\
+db_search_sss_10cands & 0.232317 & 0.232317 & 0.232317 \\
+db_search_hss_1cands & 0.209756 & 0.209756 & 0.209756 \\
+db_search_sss_1cands & 0.095122 & 0.095122 & 0.095122 \\
+\bottomrule
+\end{tabular}

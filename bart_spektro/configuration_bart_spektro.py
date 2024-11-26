@@ -25,8 +25,8 @@ class BartSpektroConfig(BartConfig):
             If None, encoder and decoder share embedding matrix - for older models compatibility.
         max_log_id (`int`, defaults to `None` - Adam's customizaiton):
             If not None, positional embeddings up to this value can be trained (if provided) and summed with standard embeddings.
-        max_mz (`int`, defaults to `499` - Adam's customization):
-
+        max_mz (`int`, defaults to None - Adam's customization):
+            If not None, embeddings up to this value can be trained (if provided) and summed with positional embeddings.
     """
     def __init__(
         self,

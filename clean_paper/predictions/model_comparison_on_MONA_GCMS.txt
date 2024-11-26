@@ -5,6 +5,7 @@ Mean morgan tanimoto similarities with ground truth
 |                                      |   similsort_mean_simil |   probsort_mean_simil |
 |:-------------------------------------|-----------------------:|----------------------:|
 | db_search_morgan_tanimoto            |               0.702518 |              0.702518 |
+| balmy-violet-577_custom_final_beam50 |               0.570272 |              0.397077 |
 | balmy-violet-577_custom_final_beam10 |               0.525996 |              0.396955 |
 | db_search_hss_50cands                |               0.47323  |              0.270614 |
 | db_search_sss_50cands                |               0.43651  |              0.25677  |
@@ -12,7 +13,7 @@ Mean morgan tanimoto similarities with ground truth
 | balmy-violet-577_custom_final_greedy |               0.395776 |              0.395776 |
 | db_search_sss_10cands                |               0.380311 |              0.256754 |
 | db_search_hss_1cands                 |               0.270603 |              0.270603 |
-| db_search_sss_1cands                 |               0.256754 |              0.256754 |
+   | db_search_sss_1cands                 |               0.256754 |              0.256754 |
 
 Exact matches
 |                                      |   rate_of_precise_preds_similsort |   rate_of_precise_preds_probsort |
@@ -30,6 +31,7 @@ Exact matches
 
 Results of the statistical test:
 --------------------------------
+
 Friedman test (probsort): statistic=14341.83401623718, p-value=0.0   *** highly significant
 Friedman test (similsort): statistic=22246.851491040663, p-value=0.0   *** highly significant
 
@@ -75,9 +77,9 @@ Rate of wins over database search predictions (probsort):
 Rate of wins over database search predictions (similsort):
 |                                      |   db_search_morgan_tanimoto |   db_search_sss_10cands |   db_search_sss_50cands |   db_search_sss_1cands |   db_search_hss_10cands |   db_search_hss_50cands |   db_search_hss_1cands |
 |:-------------------------------------|----------------------------:|------------------------:|------------------------:|-----------------------:|------------------------:|------------------------:|-----------------------:|
-| balmy-violet-577_custom_final_beam50 |                    0.330608 |                0.704287 |                0.583848 |               0.869791 |                0.66999  |                0.548554 |               0.870588 |
-| balmy-violet-577_custom_final_beam10 |                    0.288933 |                0.609372 |                0.495912 |               0.825723 |                0.572881 |                0.457029 |               0.827119 |
 | balmy-violet-577_custom_final_greedy |                    0.157328 |                0.37009  |                0.283549 |               0.618943 |                0.337188 |                0.246859 |               0.626122 |
+| balmy-violet-577_custom_final_beam10 |                    0.288933 |                0.609372 |                0.495912 |               0.825723 |                0.572881 |                0.457029 |               0.827119 |
+| balmy-violet-577_custom_final_beam50 |                    0.330608 |                0.704287 |                0.583848 |               0.869791 |                0.66999  |                0.548554 |               0.870588 |
 
 
 Rate of at least as good as database search predictions (probsort):

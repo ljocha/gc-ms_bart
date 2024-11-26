@@ -45,15 +45,27 @@ def fix_model_duplicity(models, new_model_name, log_dicts):
         Fixed model name without duplicity.
     """
     duplicate_names = [(i, name) for i, name in enumerate(models) if new_model_name in name]
+    duplicate_logdicts = [log_dicts[i] for (i, _) in duplicate_names]
 
     if not duplicate_names:
         return new_model_name
 
     duplicate_names.append((-1, new_model_name))
+    duplicate_logdicts.append(log_dicts[-1])
 
-    additional_infos = [log_dict["general"].get("additional_naming_info") for log_dict in log_dicts]
-    datasets = [log_dict["dataset"].get("dataset_name") for log_dict in log_dicts]
-    num_candidates = [log_dict["general"].get("num_candidates") for log_dict in log_dicts]
+
+    additional_infos = [log_dict["general"].get("additional_naming_info") for log_dict in duplicate_logdicts]
+    datasets = [log_dict["dataset"].get("dataset_name") for log_dict in duplicate_logdicts]
+    num_candidates = [log_dict["general"].get("num_candidates") for log_dict in duplicate_logdicts]
+
+    ####
+    # print("########")
+    # print(duplicate_names)
+    # print(len(duplicate_logdicts))
+    # print(additional_infos)
+    # print(datasets)
+    # print(num_candidates)
+    ####
 
     # check if additional_naming_info will distinguishes the models
     if None not in additional_infos and len(additional_infos) == len(set(additional_infos)): # all are unique and not None
@@ -62,15 +74,19 @@ def fix_model_duplicity(models, new_model_name, log_dicts):
     elif len(datasets) == len(set(datasets)):
         new_infos = datasets
     elif len(num_candidates) == len(set(num_candidates)):
-        new_infos = num_candidates
+        new_infos = [str(nc) + "cands" for nc in num_candidates]
     else:
         new_infos = [f"{ai}_{ds}_{nc}" for ai, ds, nc in zip(additional_infos, datasets, num_candidates)]
         print("Warning: The model names might not be unique. Additional info, dataset and num_candidates are not unique, adding all of them to the model names.")
 
     for (i, used_name), new_info in zip(duplicate_names[:-1], new_infos[:-1]):
-        if new_info in used_name:
+        if str(new_info) in used_name:
             continue
         models[i] = f"{used_name}_{new_info}"
+
+    # print("new_infos", new_infos)
+    # print(f"changed models: {models}   new model: {duplicate_names[-1][1]}_{new_infos[-1]}")
+    # print("########")
 
     return f"{duplicate_names[-1][1]}_{new_infos[-1]}"
 
