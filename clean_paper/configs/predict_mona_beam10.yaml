@@ -3,8 +3,8 @@ general:
   additional_naming_info: "beam10" # optional
 
 dataset:
-  data_path: "data/extra_libraries/MONA_GCMS/MONA_GCMS_overlaps_included.jsonl" # REQUIRED!
-  dataset_name: MONA_GCMS_overlaps_included # NEIMSgen/NIST/...    REQUIRED! (for naming)
+  data_path: "data/extra_libraries/MONA_GCMS/MONA_GCMS_noD.jsonl" # REQUIRED!
+  dataset_name: MONA_GCMS # NEIMSgen/NIST/...    REQUIRED! (for naming)
   data_split: all # train/test/valid/... REQUIRED! (for naming)
 
 dataloader:

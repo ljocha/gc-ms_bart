@@ -93,8 +93,12 @@ class SpectroDataCollator:
         return out
 
 
-def position_ids_creator(intensities, log_base, log_shift, do_log_binning=True, linear_bin_decimals=None):
+def position_ids_creator(intensities, log_base=None, log_shift=None, do_log_binning=True, linear_bin_decimals=None):
     """create position ids for the Spectro Transformer model"""
+
+    assert not do_log_binning or (log_base is not None and log_shift is not None), "log_base and log_shift must be provided for log binning"
+    assert do_log_binning or linear_bin_decimals is not None, "linear_bin_decimals must be provided for linear binning"
+
     x = np.array(intensities) / max(intensities)  # normalize
 
     if do_log_binning:
@@ -102,7 +106,6 @@ def position_ids_creator(intensities, log_base, log_shift, do_log_binning=True, 
         x = x * (x > 0) # all the small intensities are mapped to 0
     else:
         x = np.around(x, decimals=linear_bin_decimals) * 10**linear_bin_decimals  # intensity rounded to 2 decimal places
-        print(x)
 
     return list(x.astype("int32"))
 
@@ -138,8 +141,8 @@ def preprocess_datapoint(datadict, source_token, preprocess_args):
 
     if not preprocess_args.get("restrict_intensities"):
         out["position_ids"] = position_ids_creator(intensities,
-                                                   preprocess_args["log_base"],
-                                                   preprocess_args["log_shift"],
+                                                   preprocess_args.get("log_base", None),
+                                                   preprocess_args.get("log_shift", None),
                                                    do_log_binning=preprocess_args.get("do_log_binning", True),
                                                    linear_bin_decimals=preprocess_args.get("linear_bin_decimals", None))
 

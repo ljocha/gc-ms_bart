@@ -117,7 +117,13 @@ def main(
     do_mces = config.get("do_mces", False)
     do_save_best_predictions = config.get("save_best_predictions", False)
 
-
+    # default labels value
+    parent_dir = predictions_path.parent
+    log_file_path = parent_dir / "log_file.yaml"
+    with open(log_file_path, "r", encoding="utf-8") as f:
+        old_logs = yaml.safe_load(f)
+    if not labels_path:
+        labels_path = pathlib.Path(old_logs["dataset"]["data_path"])
 
     data_name, data_split, data_range = parse_predictions_path(predictions_path)
     num_lines_predictions = line_count(predictions_path)
@@ -158,10 +164,7 @@ def main(
     print(f">> Setting up   {config['fp_simil_function']}   similarity function. Do your data CORRESPOND?")
 
     # open files for writing
-    parent_dir = predictions_path.parent
     pred_f = predictions_path.open("r")
-    log_file_path = parent_dir / "log_file.yaml"
-    log_file = (log_file_path).open("a+")
     fp_simil_fails_simil_f = (parent_dir / f"fp_simil_fails_simil_{fp_simil_args_info}.csv").open("w+")
     fp_simil_fails_prob_f = (parent_dir / f"fp_simil_fails_prob_{fp_simil_args_info}.csv").open("w+")
     fp_simil_fails_simil_f.write("pred,label\n")
@@ -494,6 +497,7 @@ def main(
         fig_top1_mces.write_image(str(parent_dir / f"top1_mces.png"), scale=scale)
         fig_top1_prob_mces.write_image(str(parent_dir / f"top1_prob_mces.png"), scale=scale)
 
+    log_file = (log_file_path).open("a+")
     yaml.dump(logs, log_file, indent=4)
     print(logs)
     log_file.close()

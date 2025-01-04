@@ -49,7 +49,11 @@ python ../compare_models.py \
                 ./predictions/jolly-lion-562_exp6_45perc_frozen/NIST/1728025474_valid_full_greedy \
                 ./predictions/smooth-totem-563_exp6_72perc_frozen/NIST/1728025473_valid_full_greedy \
                 ./predictions/fearless-wildflower-490_rassp1_neims1_224kPretrain_148k/NIST/1730465603_valid_full_greedy \
-                ./predictions/balmy-violet-577_custom_final/NIST/1730720158_valid_full_greedy" \
+                ./predictions/balmy-violet-577_custom_final/NIST/1730720158_valid_full_greedy \
+                ./predictions/royal-violet-583_exp2_lin_10000/NIST/1733919330_valid_full_greedy \
+                ./predictions/sleek-cloud-581_9M_448+296k/NIST/1733919330_valid_full_greedy \
+                ./predictions/royal-violet-583_exp2_lin_10000/NIST/1734179204_valid_full_greedy \
+                ./predictions/sleek-cloud-581_9M_448+296k/NIST/1733919330_valid_full_greedy" \
                 --db-search-prediction-paths \
                 "./predictions/db_search_hss/NIST/1729676322_valid_full_1cand \
                 ./predictions/db_search_morgan_tanimoto/NIST/1729630748_valid_full_1cand \
