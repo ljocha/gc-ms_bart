@@ -51,5 +51,10 @@ data/datasets/extra_libraries/read_me.pdf
 predictions/**/*.png
 predictions/**/*.csv
 
+# share NIST splits
+!clean_paper/data/nist/train.smi
+!clean_paper/data/nist/valid.smi
+!clean_paper/data/nist/test.smi
+
 # figures (just for paper purposes)
 figures/**
