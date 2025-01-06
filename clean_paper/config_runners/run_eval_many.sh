@@ -68,14 +68,14 @@ for prediction in "${PREDICTIONS_valid[@]}" ; do
     echo "Processing prediction: $prediction `wc -l $prediction`"
     python ../evaluate_predictions.py --predictions-path $prediction \
                                     --labels-path data/nist/valid.jsonl \
-                                    --config-file configs/evaluate_nist.yaml &
+                                    --config-file configs/evaluate.yaml &
 done
 
 for prediction in "${PREDICTIONS_test[@]}" ; do
     echo "Processing prediction: $prediction `wc -l $prediction`"
     python ../evaluate_predictions.py --predictions-path $prediction \
                                         --labels-path data/nist/test.jsonl \
-                                        --config-file configs/evaluate_nist.yaml &
+                                        --config-file configs/evaluate.yaml &
 done
 
 

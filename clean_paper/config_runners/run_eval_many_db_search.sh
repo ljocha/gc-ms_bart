@@ -24,7 +24,7 @@ for prediction in "${PREDICTIONS[@]}"; do
     echo "Processing prediction: $prediction `wc -l $prediction`"
     python ../evaluate_predictions.py --predictions-path $prediction \
                                     --labels-path data/nist/test_with_db_index.jsonl \
-                                    --config-file configs/evaluate_nist.yaml &
+                                    --config-file configs/evaluate.yaml &
 done
 
 # Optional: Wait for all background processes to finish
