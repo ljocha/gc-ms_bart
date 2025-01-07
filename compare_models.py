@@ -306,7 +306,7 @@ def get_info_from_logfile(log_dict: dict, value_path: str):
     except (ValueError, SyntaxError):
         pass
 
-    assert isinstance(value, (str, int, float)), f"Value at path {value_path} is not a string, int or float."
+    assert isinstance(value, (str, int, float, list)), f"Value at path {value_path} is not a string, int, float or list. We got value: {value}."
     return value
 
 
