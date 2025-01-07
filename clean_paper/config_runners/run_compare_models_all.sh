@@ -16,5 +16,5 @@ for lib in ${LIBS[@]}; do
         --models-prediction-paths "$model_predictions" \
         --db-search-prediction-paths "$db_search_morgan_tanimoto \
                                      $db_search_predictions" \
-        --save-path ./results/sleek_cloud &
+        --save-path ./results/$MODEL &
 done
