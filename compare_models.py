@@ -501,7 +501,7 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
     outfile_name = f"model_comparison_on_{dataset_name}{'_' + additional_info if additional_info else ''}.txt"
 
     # MARKDOWN OUTPUT
-    outfile_path = one_of_the_paths.parent.parent.parent / outfile_name if save_path == "" else Path(save_path) / outfile_name
+    outfile_path = one_of_the_paths.parent.parent.parent.parent / "results" / outfile_name if save_path == "" else Path(save_path) / outfile_name
     outfile_path.parent.mkdir(parents=True, exist_ok=True)
     with open(outfile_path, 'w') as f:
         f.write("### Statistical significance of model comparison ###\n\n\n".upper())
