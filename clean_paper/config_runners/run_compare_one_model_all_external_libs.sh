@@ -1,4 +1,4 @@
-MODEL=sleek-cloud-581_9M_448+296k
+MODEL=youthful-wave-590_exp8_9M_448+296
 LIBS=(Cayman_library MONA_GCMS RCX_NO SWGDRUG)
 # DB_SEARCHES=(db_search_hss db_search_morgan_tanimoto db_search_sss)
 # cands=(1 10 50)
@@ -12,7 +12,7 @@ for lib in ${LIBS[@]}; do
     echo "Processing model prediction: $model_predictions"
     echo "Processing db search prediction: $db_search_predictions"
     python ../compare_models.py \
-        --additional-info "9M" \
+        --additional-info \
         --models-prediction-paths "$model_predictions" \
         --db-search-prediction-paths "$db_search_morgan_tanimoto \
                                      $db_search_predictions" \

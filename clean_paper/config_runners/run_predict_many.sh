@@ -1,4 +1,4 @@
-# checkpoints/finetune_clean/balmy-violet-577_custom_final/checkpoint-147476
+# checkpoints/finetune_clean/balmy-violet-577_exp8_224_148/checkpoint-147476
 # checkpoints/finetune_clean/hardy-bush-576_exp5_custom_one_src_token/checkpoint-73738
 
 model="../checkpoints/finetune_clean/royal-violet-583_exp2_lin_10000/checkpoint-73738"

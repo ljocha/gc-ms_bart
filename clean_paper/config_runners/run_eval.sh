@@ -4,7 +4,7 @@
 #                                   --config-file configs/evaluate_mace.yaml
 
 #  NIST
-python evaluate_predictions.py --predictions-path ./predictions/balmy-violet-577_custom_final/NIST/1730754395_test_full_beam50/predictions.jsonl \
+python evaluate_predictions.py --predictions-path ./predictions/royal-violet-583_exp2_lin_10000/NIST/1734179204_valid_full_beam10/predictions.jsonl \
                                --config-file configs/evaluate.yaml
 
 #  db search
