@@ -1,16 +1,16 @@
 # checkpoints/finetune_clean/balmy-violet-577_exp8_224_148/checkpoint-147476
 # checkpoints/finetune_clean/hardy-bush-576_exp5_custom_one_src_token/checkpoint-73738
 
-model="../checkpoints/finetune_clean/royal-violet-583_exp2_lin_10000/checkpoint-73738"
-CVD=2
+model="../checkpoints/finetune_clean/youthful-wave-590_exp8_9M_448+296/checkpoint-294952"
+CVD=0
 
 echo "Processing model: $model"
 CUDA_VISIBLE_DEVICES=$CVD python predict.py --checkpoint $model \
                                          --output-folder predictions \
-                                         --config-file configs/predict_nist_valid_greedy_exp2_lin_10000.yaml &
+                                         --config-file configs/predict_massbank_greedy.yaml &
 
 CUDA_VISIBLE_DEVICES=$CVD python predict.py --checkpoint $model \
                                         --output-folder predictions \
-                                        --config-file configs/predict_nist_valid_beam10_exp2_lin_10000.yaml &
+                                        --config-file configs/predict_massbank_beam10.yaml &
 
 wait

@@ -21,13 +21,7 @@
 python ../compare_models.py \
                 --additional-info comparison_debug \
                 --models-prediction-paths \
-                "./predictions/valiant-totem-557_exp4_neims/NIST/1727959179_valid_full_greedy \
-                ./predictions/avid-rain-560_exp4_rassp/NIST/1727959179_valid_full_greedy \
-                ./predictions/effortless-river-558_exp4_rassp_neims/NIST/1727959179_valid_full_greedy \
-                ./predictions/hopeful-rain-557_exp4_rassp_neims_nist/NIST/1727883450_valid_full_greedy \
-                ./predictions/autumn-dawn-564_exp5_one_src_token/NIST/1727883404_valid_full_greedy \
-                ./predictions/jolly-lion-562_exp6_45perc_frozen/NIST/1728025474_valid_full_greedy \
-                ./predictions/smooth-totem-563_exp6_72perc_frozen/NIST/1728025473_valid_full_greedy" \
+                "./predictions/youthful-wave-590_exp8_9M_448+296/NIST/1736157156_valid_full_greedy" \
                 --db-search-prediction-paths \
                 "./predictions/db_search_hss/NIST/1729676322_valid_full_1cand \
                 ./predictions/db_search_morgan_tanimoto/NIST/1729630748_valid_full_1cand \

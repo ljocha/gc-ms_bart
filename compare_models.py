@@ -58,15 +58,6 @@ def fix_model_duplicity(models, new_model_name, log_dicts):
     datasets = [log_dict["dataset"].get("dataset_name") for log_dict in duplicate_logdicts]
     num_candidates = [log_dict["general"].get("num_candidates") for log_dict in duplicate_logdicts]
 
-    ####
-    # print("########")
-    # print(duplicate_names)
-    # print(len(duplicate_logdicts))
-    # print(additional_infos)
-    # print(datasets)
-    # print(num_candidates)
-    ####
-
     # check if additional_naming_info will distinguishes the models
     if None not in additional_infos and len(additional_infos) == len(set(additional_infos)): # all are unique and not None
         new_infos = additional_infos
@@ -83,10 +74,6 @@ def fix_model_duplicity(models, new_model_name, log_dicts):
         if str(new_info) in used_name:
             continue
         models[i] = f"{used_name}_{new_info}"
-
-    # print("new_infos", new_infos)
-    # print(f"changed models: {models}   new model: {duplicate_names[-1][1]}_{new_infos[-1]}")
-    # print("########")
 
     return f"{duplicate_names[-1][1]}_{new_infos[-1]}"
 
@@ -214,14 +201,14 @@ def check_significance_of_inequality(similarity_df):
         test_name = "Wilcoxon signed-rank test"
         print("Only two models found. Performing Wilcoxon signed-rank test...")
         stat, p_value = perform_wilcoxon_test(similarity_df)
+        nemenyi_prob = None
 
     elif num_models > 2:
         test_name = "Friedman test"
         print("More than two models found. Performing Friedman test...")
         stat, p_value = perform_friedman_test(similarity_df)
 
-    # If significant difference, perform Nemenyi post-hoc test
-    if num_models > 2:
+        # If significant difference, perform Nemenyi post-hoc test
         if p_value < 0.05:
             print("Performing Nemenyi post-hoc test...")
             nemenyi_prob = perform_nemenyi_test(similarity_df)
@@ -239,6 +226,22 @@ def compute_rate_of_wins(similarities1: pd.Series, similarities2: pd.Series):
 
     return win_rate, at_least_as_good_rate
 
+def compute_rate_of_real_wins(df_best_predictions1: pd.DataFrame, df_best_predictions2: pd.DataFrame, type: str = "simil"):
+    """Compute the rate of wins of the first list over the second list.
+    A real win takes into consideration not only the similarity but also the identity of the candidate.
+    The type parameter can be either 'simil' or 'prob'."""
+
+    alag_similarity = df_best_predictions1[f"{type}_best_simil_morgan_tanimoto"] >= df_best_predictions2[f"{type}_best_simil_morgan_tanimoto"]
+    higher_similarity = df_best_predictions1[f"{type}_best_simil_morgan_tanimoto"] > df_best_predictions2[f"{type}_best_simil_morgan_tanimoto"]
+    exact_match1 = df_best_predictions1[f"{type}_best_smiless_morgan_tanimoto"] == df_best_predictions1["gt_smiles"]
+    exact_match2 = df_best_predictions2[f"{type}_best_smiless_morgan_tanimoto"] == df_best_predictions2["gt_smiles"]
+    real_wins = higher_similarity | (exact_match1 & ~exact_match2)
+    real_alag = alag_similarity & ~(~exact_match1 & exact_match2)
+
+    win_rate = real_wins.sum() / len(df_best_predictions1)
+    at_least_as_good_rate = real_alag.sum() / len(df_best_predictions1)
+
+    return win_rate, at_least_as_good_rate
 
 def compute_mean_difference(similarities1: pd.Series, similarities2: pd.Series):
     """Compute the mean difference between two lists of similarities."""
@@ -258,6 +261,18 @@ def compute_rate_of_wins_for_two_groups(similarity_df, models1, models2):
 
     return wins_df, at_least_as_good_df
 
+def compute_rate_of_real_wins_for_two_groups(group1_dfs, group1_names, group2_dfs, group2_names):
+    """Compute the rate of real wins of the first group over the second group.
+    A real win takes into consideration not only the similarity but also the identity of the candidate."""
+    wins_df = pd.DataFrame(index=group1_names, columns=group2_names)
+    at_least_as_good_df = pd.DataFrame(index=group1_names, columns=group2_names)
+
+    for model1, df_1 in zip(group1_names, group1_dfs):
+        for model2, df_2 in zip(group2_names, group2_dfs):
+            win_rate, at_least_as_good_rate = compute_rate_of_real_wins(df_1, df_2)
+            wins_df.loc[model1, model2] = win_rate
+            at_least_as_good_df.loc[model1, model2] = at_least_as_good_rate
+    return wins_df, at_least_as_good_df
 
 def compute_mean_differences_for_two_groups(similarity_df, models1, models2):
     """Compute the mean differences between the first group and the second group."""
@@ -429,10 +444,12 @@ def compare_models(models_prediction_paths: Union[List[str], None] = None,
     if len(model_names) > 0 and len(db_search_names) > 0:
         wins_over_db_search_probsort_df, at_least_as_good_probsort_df = compute_rate_of_wins_for_two_groups(probsort_df, model_names, db_search_names)
         wins_over_db_search_similsort_df, at_least_as_good_similsort_df = compute_rate_of_wins_for_two_groups(similsort_df, model_names, db_search_names)
+        real_wins_over_db_search_similsort_df, real_at_least_as_good_similsort_df = compute_rate_of_real_wins_for_two_groups(model_dfs, model_names, db_search_dfs, db_search_names)
         fpsd_score_probsort_df = compute_mean_differences_for_two_groups(probsort_df, model_names, db_search_names)
         fpsd_score_similsort_df = compute_mean_differences_for_two_groups(similsort_df, model_names, db_search_names)
     else:
         wins_over_db_search_probsort_df, wins_over_db_search_similsort_df = None, None
+        real_wins_over_db_search_similsort_df, real_at_least_as_good_similsort_df = None, None
         at_least_as_good_probsort_df, at_least_as_good_similsort_df = None, None
         fpsd_score_probsort_df, fpsd_score_similsort_df = None, None
 
@@ -449,6 +466,8 @@ def compare_models(models_prediction_paths: Union[List[str], None] = None,
                   (wins_over_db_search_similsort_df, wins_over_db_search_similsort_df.columns[0] if wins_over_db_search_similsort_df is not None else ""),
                   (at_least_as_good_probsort_df, at_least_as_good_probsort_df.columns[0] if at_least_as_good_probsort_df is not None else ""),
                   (at_least_as_good_similsort_df, at_least_as_good_similsort_df.columns[0] if at_least_as_good_similsort_df is not None else ""),
+                  (real_wins_over_db_search_similsort_df, real_wins_over_db_search_similsort_df.columns[0] if real_wins_over_db_search_similsort_df is not None else ""),
+                  (real_at_least_as_good_similsort_df, real_at_least_as_good_similsort_df.columns[0] if real_at_least_as_good_similsort_df is not None else ""),
                   (fpsd_score_probsort_df, fpsd_score_probsort_df.columns[0] if fpsd_score_probsort_df is not None else ""),
                   (fpsd_score_similsort_df, fpsd_score_similsort_df.columns[0] if fpsd_score_similsort_df is not None else ""),
                   (db_search_performance_df, db_search_performance_df.columns[0] if db_search_performance_df is not None else "")])
@@ -472,6 +491,8 @@ def compare_models(models_prediction_paths: Union[List[str], None] = None,
         "wins_over_db_search_similsort": wins_over_db_search_similsort_df,
         "at_least_as_good_as_db_search_probsort": at_least_as_good_probsort_df,
         "at_least_as_good_as_db_search_similsort": at_least_as_good_similsort_df,
+        "real_wins_over_db_search_similsort": real_wins_over_db_search_similsort_df,
+        "real_at_least_as_good_similsort": real_at_least_as_good_similsort_df,
         "fpsd_score_probsort": fpsd_score_probsort_df,
         "fpsd_score_similsort": fpsd_score_similsort_df,
         "db_search_performance": db_search_performance_df,
@@ -530,6 +551,10 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
             f.write(comparison['at_least_as_good_as_db_search_probsort'].to_markdown() + "\n")
             f.write("\n\nRate of at least as good as database search predictions (similsort):\n")
             f.write(comparison['at_least_as_good_as_db_search_similsort'].to_markdown() + "\n")
+            f.write("\n\nRate of REAL wins over database search predictions - including exact matches (similsort):\n")
+            f.write(comparison['real_wins_over_db_search_similsort'].to_markdown() + "\n")
+            f.write("\n\nRate of REAL at least as good as database search predictions - including exact matches (similsort):\n")
+            f.write(comparison['real_at_least_as_good_similsort'].to_markdown() + "\n")
             f.write("\n\nMean difference in similarity to database search predictions (FPSD probsort):\n")
             f.write(comparison['fpsd_score_probsort'].to_markdown() + "\n")
             f.write("\n\nMean difference in similarity to database search predictions (FPSD similsort):\n")
@@ -568,6 +593,10 @@ def main(additional_info: str = typer.Option(..., help="Additional information t
                 f.write(comparison['at_least_as_good_as_db_search_probsort'].to_latex() + "\n")
                 f.write("\n\nRate of at least as good as database search predictions (similsort):\n")
                 f.write(comparison['at_least_as_good_as_db_search_similsort'].to_latex() + "\n")
+                f.write("\n\nRate of REAL wins over database search predictions - including exact matches (similsort):\n")
+                f.write(comparison['real_wins_over_db_search_similsort'].to_latex() + "\n")
+                f.write("\n\nRate of REAL at least as good as database search predictions - including exact matches (similsort):\n")
+                f.write(comparison['real_at_least_as_good_similsort'].to_latex() + "\n")
                 f.write("\n\nMean difference in similarity to database search predictions (FPSD probsort):\n")
                 f.write(comparison['fpsd_score_probsort'].to_latex() + "\n")
                 f.write("\n\nMean difference in similarity to database search predictions (FPSD similsort):\n")
