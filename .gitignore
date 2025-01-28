@@ -58,3 +58,9 @@ predictions/**/*.csv
 
 # figures (just for paper purposes)
 figures/**
+
+# vscode
+.vscode/**
+
+# hidden folders
+hidden/**
