@@ -7,7 +7,7 @@ The conda environment files are in the `env_specification` folder. `BARTtrainH10
 
 
 ## Data preprocessing
-Because of the size constraints and licensing we cannot provide the datasets we used for training. However, we provide the scripts used to obtain filter and preprocess the ZINC smiles dataset and all the preprocessing scripts for the NIST GC-MS dataset.
+Because of the licensing, we cannot provide the datasets we used for training. However, we provide the scripts used to obtain filter and preprocess the ZINC smiles dataset and all the preprocessing scripts for the NIST GC-MS dataset.
 
 For every dataset in the `data/datasets` folder, there is a README file that provides closer information about the particular dataset and explains how it was obtained.
 
