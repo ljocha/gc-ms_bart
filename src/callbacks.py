@@ -13,7 +13,7 @@ from rdkit.Chem import Draw
 
 import selfies as sf
 
-from model.modeling_spectus import BartSpektroForConditionalGeneration
+from model.modeling_spectus import SpectusForConditionalGeneration
 from model.selfies_tokenizer import SelfiesTokenizer
 from metrics import compute_fp_simils
 
@@ -66,7 +66,7 @@ class PredictionLogger(transformers.TrainerCallback):
             The current global step.
         """
 
-        model: BartSpektroForConditionalGeneration = kwargs["model"]
+        model: SpectusForConditionalGeneration = kwargs["model"]
         tokenizer: transformers.PreTrainedTokenizerFast | SelfiesTokenizer = kwargs["tokenizer"] # if missing add to the class args
         batch_size = args.per_device_eval_batch_size // 2   # to avoid OOM
 

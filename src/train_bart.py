@@ -10,13 +10,12 @@ from typing import Dict
 from tokenizers import Tokenizer
 import peft
 
-
 # custom code
 from callbacks import PredictionLogger
 from metrics import SpectroMetrics
 from utils.data_utils import SpectroDataCollator, load_all_datapipes
-from model.modeling_spectus import BartSpektroForConditionalGeneration
-from model.configuration_spectus import BartSpektroConfig
+from model.modeling_spectus import SpectusForConditionalGeneration
+from model.configuration_spectus import SpectusConfig
 from model.selfies_tokenizer import hardcode_build_selfies_tokenizer
 from utils.general_utils import get_nice_time, build_tokenizer
 
@@ -50,11 +49,11 @@ def set_batch_size(hf_training_args: Dict):
     gpu_ram = torch.cuda.get_device_properties(0).total_memory
     num_gpu = len(cvd.split(",")) if cvd else 0
     auto_bs = hf_training_args.pop("auto_bs", False)
-    bart_size = hf_training_args.pop("bart_size", None)
+    spectus_size = hf_training_args.pop("spectus_size", None)
     if auto_bs:
         print("\nUsing   A U T O M A T I C   batch size")
         print("relies heavily on POSSIBLE_TO_FIT_ON_GPU hardcoded constant")
-        print("> it works well for BART base")
+        print("> it works well for SPECTUS base (354M parameters)")
         print("> it is computed from the effective BS)")
         print("> per device BS and GAS are overwritten")
         print("> it automatically distinguishes between 40GB and 80GB GPUs")
@@ -63,7 +62,7 @@ def set_batch_size(hf_training_args: Dict):
         train_eff_bs = hf_training_args.pop("effective_train_batch_size")
         eval_eff_bs = hf_training_args.pop("effective_eval_batch_size")
 
-        if bart_size == "large":
+        if spectus_size == "large": # experimental, not used in the paper
             if gpu_ram > 70*1e9:               # 80GB
                 possible_to_fit_on_gpu = 32
                 possible_to_fit_on_gpu_eval = 32
@@ -71,7 +70,7 @@ def set_batch_size(hf_training_args: Dict):
                 possible_to_fit_on_gpu = 16
                 possible_to_fit_on_gpu_eval = 16
 
-        elif bart_size == "base":
+        elif spectus_size == "base":
             if gpu_ram > 70*1e9:               # 80GB
                 possible_to_fit_on_gpu = 128
                 possible_to_fit_on_gpu_eval = 64
@@ -79,7 +78,7 @@ def set_batch_size(hf_training_args: Dict):
                 possible_to_fit_on_gpu = 64
                 possible_to_fit_on_gpu_eval = 32
         else:
-            raise ValueError("bart_size must be provided in hf_training_args if auto_bs is True")
+            raise ValueError("spectus_size must be provided in hf_training_args if auto_bs is True")
 
         gas = train_eff_bs // (num_gpu * possible_to_fit_on_gpu)
         train_eff_bs = gas * num_gpu * possible_to_fit_on_gpu
@@ -158,10 +157,10 @@ def freeze_model(model, train_using_peft, train_fc1_only, custom_freeze):
 
 
 
-def get_spectro_config(model_args: Dict, tokenizer: transformers.PreTrainedTokenizerFast) -> BartSpektroConfig:
+def get_spectro_config(model_args: Dict, tokenizer: transformers.PreTrainedTokenizerFast) -> SpectusConfig:
     assert not (bool(model_args.get("restrict_intensities", None)) ^ bool(model_args.get("encoder_seq_len", None))), "restrict_intensities and encoder_position_embeddings must be both provided or both None"
 
-    return BartSpektroConfig(separate_encoder_decoder_embeds=model_args["separate_encoder_decoder_embeds"],
+    return SpectusConfig(separate_encoder_decoder_embeds=model_args["separate_encoder_decoder_embeds"],
                              vocab_size=len(tokenizer.get_vocab()),
                              decoder_max_position_embeddings=model_args["decoder_seq_len"],
                              encoder_max_position_embeddings=model_args.get("encoder_seq_len", None), # specify only when restricting intensities, otherwise encoder embedding matrix is sized by max_log_id
@@ -294,14 +293,14 @@ def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the
             model_args["max_log_id"] = 10**preprocess_args["linear_bin_decimals"]
 
     datapipes = load_all_datapipes(dataset_args, preprocess_args)
-    bart_spectro_config = get_spectro_config(model_args, tokenizer)
+    spectus_spectro_config = get_spectro_config(model_args, tokenizer)
 
     print("Loading model...")
     if checkpoint is not None:
         print(f"Loading checkpoint from {checkpoint}")
-        model = BartSpektroForConditionalGeneration.from_pretrained(checkpoint)
+        model = SpectusForConditionalGeneration.from_pretrained(checkpoint)
     else:
-        model = BartSpektroForConditionalGeneration(bart_spectro_config)
+        model = SpectusForConditionalGeneration(spectus_spectro_config)
 
     print("max_log_id:", model.config.max_log_id)
     print("log_shift:", preprocess_args.get("log_shift", None))

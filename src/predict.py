@@ -14,8 +14,8 @@ from typing import Dict, Any, Tuple, List
 
 from rdkit import Chem, RDLogger
 from utils.data_utils import SpectroDataCollator, build_single_datapipe
-# from model import BartSpektroForConditionalGeneration
-from model.modeling_spectus import BartSpektroForConditionalGeneration
+# from model import SpectusForConditionalGeneration
+from model.modeling_spectus import SpectusForConditionalGeneration
 from utils.general_utils import build_tokenizer, get_sequence_probs, timestamp_to_readable, hours_minutes_seconds
 from copy import deepcopy
 
@@ -128,7 +128,7 @@ def main(
     # set output files
     log_file, predictions_file = open_files(output_folder, checkpoint, dataset_config, data_range, additional_info)
 
-    model = BartSpektroForConditionalGeneration.from_pretrained(checkpoint)
+    model = SpectusForConditionalGeneration.from_pretrained(checkpoint)
     model.generation_config.length_penalty = generation_config["length_penalty"]
     loader = torch.utils.data.DataLoader(datapipe, **dataloader_config, drop_last=False, shuffle=False, collate_fn=SpectroDataCollator(inference_mode=True, keep_all_columns=True)) # type: ignore
 

@@ -17,7 +17,7 @@
 # adam imports
 
 from transformers.modeling_outputs import BaseModelOutput
-from .configuration_spectus import BartSpektroConfig
+from .configuration_spectus import SpectusConfig
 from transformers.models.bart.modeling_bart import BartPretrainedModel, BartLearnedPositionalEmbedding, BartEncoderLayer, BartDecoder, BartDecoderLayer
 from transformers.utils import ModelOutput
 from transformers.modeling_outputs import dataclass
@@ -121,7 +121,7 @@ def _expand_mask(mask: torch.Tensor, dtype: torch.dtype, tgt_len: Optional[int] 
 
     return inverted_mask.masked_fill(inverted_mask.bool(), torch.finfo(dtype).min)
 
-class BartSpektroLearnedPositionalEmbedding(nn.Embedding):
+class SpectusLearnedPositionalEmbedding(nn.Embedding):
     """
     This module learns positional embeddings up to a fixed maximum size.
     """
@@ -138,7 +138,7 @@ class BartSpektroLearnedPositionalEmbedding(nn.Embedding):
         return super().forward(positions + self.offset)
 
 
-class BartSpektroEncoder(BartPretrainedModel):
+class SpectusEncoder(BartPretrainedModel):
     """
     Transformer encoder consisting of *config.encoder_layers* self attention layers. Each layer is a
     [`BartEncoderLayer`].
@@ -148,7 +148,7 @@ class BartSpektroEncoder(BartPretrainedModel):
         embed_tokens (nn.Embedding): output embedding
     """
 
-    def __init__(self, config: BartSpektroConfig, embed_tokens: Optional[nn.Embedding] = None):
+    def __init__(self, config: SpectusConfig, embed_tokens: Optional[nn.Embedding] = None):
         super().__init__(config) # !! should we pop the decoder_max_position_embeddings from config?
 
         self.dropout = config.dropout
@@ -164,19 +164,19 @@ class BartSpektroEncoder(BartPretrainedModel):
         else:
             # Adam - if user wants one dictionary for each encoder and decoder (specified in config with separate_encoder_decoder_embeds=True)
             # he also needs to specify max_mz (size of the dictionary for encoder). vocab_size is used only for decoder then.
-            # if separate_encoder_decoder_embeds=False, or the parameter is missing the execution didn't get here from BartSpektroModel
+            # if separate_encoder_decoder_embeds=False, or the parameter is missing the execution didn't get here from SpectusModel
             # should be compatible with previous models with one tied dict
             if hasattr(config, "separate_encoder_decoder_embeds") and config.separate_encoder_decoder_embeds == True: # all fine
                 if hasattr(config, "max_mz") and config.max_mz != None:
                     num_embeddings = config.max_mz + 1
                     self.embed_tokens = nn.Embedding(num_embeddings, embed_dim) # Adam customization + no padding_idx
                 else:
-                    raise ValueError("config.max_mz must be set for BartSpektroEncoder to have separated embeddings (it denotes the size of the dictionary for encoder)")
+                    raise ValueError("config.max_mz must be set for SpectusEncoder to have separated embeddings (it denotes the size of the dictionary for encoder)")
             else:
-                raise ValueError("This adjusted BartSpektroEncoder shouldn't be used appart from BartSpektroModel. Use BartEncoder instead.")
+                raise ValueError("This adjusted SpectusEncoder shouldn't be used appart from SpectusModel. Use BartEncoder instead.")
 
         if config.max_log_id:
-            self.embed_positions = BartSpektroLearnedPositionalEmbedding(
+            self.embed_positions = SpectusLearnedPositionalEmbedding(
                 config.max_log_id + 1,  # size of the dict for all max+1 values
                 embed_dim,
             )
@@ -335,13 +335,13 @@ class BartSpektroEncoder(BartPretrainedModel):
         )
 
 
-class BartSpektroDecoder(BartDecoder):
+class SpectusDecoder(BartDecoder):
     """
     The module doesn't change any functionality of the original BartDecoder.
     It only changes the __init__() function to accept the decoder_max_position_embeddings
     parameter instead of the max_position_embeddings parameter.
     """
-    def __init__(self, config: BartSpektroConfig, embed_tokens: Optional[nn.Embedding] = None):
+    def __init__(self, config: SpectusConfig, embed_tokens: Optional[nn.Embedding] = None):
         super(BartDecoder, self).__init__(config) # !!should we pop the decoder_max_position_embeddings from config?
 
         self.dropout = config.dropout
@@ -367,8 +367,8 @@ class BartSpektroDecoder(BartDecoder):
         self.post_init()
 
 
-class BartSpektroModel(BartPretrainedModel):
-    def __init__(self, config: BartSpektroConfig):
+class SpectusModel(BartPretrainedModel):
+    def __init__(self, config: SpectusConfig):
         super().__init__(config)
 
         # this branch is also for older models before adding separate_encoder_decoder_embeds
@@ -380,8 +380,8 @@ class BartSpektroModel(BartPretrainedModel):
         else:
             print("This model is using   T W O   dictionaries - one for encoder, one for decoder.")
             self.shared = None
-        self.encoder = BartSpektroEncoder(config, embed_tokens=self.shared)  # Adam - removed creating shared embeddings and passing them to both parts
-        self.decoder = BartSpektroDecoder(config, embed_tokens=self.shared)         # Adam - removed creating shared embeddings and passing them to both parts
+        self.encoder = SpectusEncoder(config, embed_tokens=self.shared)  # Adam - removed creating shared embeddings and passing them to both parts
+        self.decoder = SpectusDecoder(config, embed_tokens=self.shared)         # Adam - removed creating shared embeddings and passing them to both parts
 
         # Initialize weights and apply final processing
         self.post_init()
@@ -493,13 +493,13 @@ class BartSpektroModel(BartPretrainedModel):
             encoder_attentions=encoder_outputs.attentions
         )
 
-class BartSpektroForConditionalGeneration(BartPretrainedModel):
+class SpectusForConditionalGeneration(BartPretrainedModel):
     base_model_prefix = "model"
     _keys_to_ignore_on_load_missing = [r"final_logits_bias", r"lm_head.weight"]
 
-    def __init__(self, config: BartSpektroConfig):
+    def __init__(self, config: SpectusConfig):
         super().__init__(config)
-        self.model = BartSpektroModel(config)
+        self.model = SpectusModel(config)
         self.register_buffer("final_logits_bias", torch.zeros((1, self.model.decoder.embed_tokens.num_embeddings)))
         self.lm_head = nn.Linear(config.d_model, self.model.decoder.embed_tokens.num_embeddings, bias=False)
 

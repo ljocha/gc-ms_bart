@@ -12,12 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" Customized (Adam H.) BART model configuration"""
+""" Customized (Adam H.) SpecTUS model configuration"""
 
 from typing import Optional
 from transformers import BartConfig
 
-class BartSpektroConfig(BartConfig):
+class SpectusConfig(BartConfig):
     """
         separate_encoder_decoder_embeds (`bool`, defaults to `False` - Adam's customization):
             If True, separate embeddings are used for encoder and decoder.
