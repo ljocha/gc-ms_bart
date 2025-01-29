@@ -14,6 +14,7 @@
 # limitations under the License.
 """ Customized (Adam H.) SpecTUS model configuration"""
 
+from __future__ import annotations
 from typing import Optional
 from transformers import BartConfig
 
@@ -30,11 +31,11 @@ class SpectusConfig(BartConfig):
     """
     def __init__(
         self,
-        separate_encoder_decoder_embeds: Optional[bool] = None,
-        max_log_id: Optional[int] = None,
-        max_mz: Optional[int] = None,
+        separate_encoder_decoder_embeds: bool | None = None,
+        max_log_id: int | None = None,
+        max_mz: int | None = None,
         decoder_max_position_embeddings: int = 200,
-        encoder_max_position_embeddings: Optional[int] = None,
+        encoder_max_position_embeddings: int | None = None,
         **kwargs):
 
         self.max_log_id=max_log_id

@@ -12,9 +12,12 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-""" PyTorch BART model."""
 
-# adam imports
+""" This model is created based on the Hugging Face BART model impolementation.
+It is adjusted to use separate embeddings for encoder and decoder, and to allow training
+of positional embeddings up to a certain value (used as a second channel for inputing data).
+Maybe some other adjustments are adadded. """
+
 
 from transformers.modeling_outputs import BaseModelOutput
 from .configuration_spectus import SpectusConfig
@@ -81,7 +84,7 @@ class Seq2SeqLMOutputSpectro(ModelOutput):
     """
 
     loss: Optional[torch.FloatTensor] = None
-    logits: torch.FloatTensor = None
+    logits: Optional[torch.FloatTensor] = None
     last_hidden_state: Optional[torch.FloatTensor] = None
     past_key_values: Optional[Tuple[Tuple[torch.FloatTensor]]] = None
     decoder_hidden_states: Optional[Tuple[torch.FloatTensor]] = None
@@ -127,7 +130,7 @@ class SpectusLearnedPositionalEmbedding(nn.Embedding):
     """
 
     def __init__(self, num_embeddings: int, embedding_dim: int):
-        # Bart is set up so that if padding_idx is specified then offset the embedding ids by 1 (the zero'th embedding is for padding)
+        # Spectus is set up so that if padding_idx is specified then offset the embedding ids by 1 (the zero'th embedding is for padding)
         # and adjust num_embeddings appropriately. Other models don't have this hack
         self.offset = 2
         super().__init__(num_embeddings + self.offset, embedding_dim)
@@ -144,7 +147,7 @@ class SpectusEncoder(BartPretrainedModel):
     [`BartEncoderLayer`].
 
     Args:
-        config: BartConfig
+        config: SpectusConfig
         embed_tokens (nn.Embedding): output embedding
     """
 

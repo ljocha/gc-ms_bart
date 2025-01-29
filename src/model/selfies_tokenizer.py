@@ -1,6 +1,6 @@
+from __future__ import annotations
 import json
 from pathlib import Path
-from typing import Optional, Tuple, Dict, List, Union
 import selfies as sf
 
 from transformers import PreTrainedTokenizer
@@ -32,10 +32,10 @@ sf.set_semantic_constraints(default_constraints)
 
 
 class SelfiesTokenizer(PreTrainedTokenizer):
-    def __init__(self, vocab: Dict[str, int] = None, max_len: int = None, **kwargs):
+    def __init__(self, vocab: dict[str, int] = {}, max_len: int | None = None, **kwargs):
         super().__init__(max_len=max_len, **kwargs)
-        self.__token_ids: Dict[str, int] = vocab
-        self.__id_tokens: Dict[int, str] = {value: key for key, value in vocab.items()}
+        self.__token_ids: dict[str, int] = vocab
+        self.__id_tokens: dict[int, str] = {value: key for key, value in vocab.items()}
         self.special_tokens = {}
 
     def add_special_tokens(self, *args, **kwargs):
@@ -62,10 +62,10 @@ class SelfiesTokenizer(PreTrainedTokenizer):
     def _convert_id_to_token(self, index: int) -> str:
         return self.__id_tokens[index] if index in self.__id_tokens else self.unk_token
 
-    def get_vocab(self) -> Dict[str, int]:
+    def get_vocab(self) -> dict[str, int]:
         return self.__token_ids.copy()
 
-    def save_vocabulary(self, save_directory: str, filename_prefix: Optional[str] = None) -> Tuple[str]:
+    def save_vocabulary(self, save_directory: str, filename_prefix: str | None = None) -> tuple[str]:
         if filename_prefix is None:
             filename_prefix = ''
         vocab_path = Path(save_directory, filename_prefix + 'vocab.json')
@@ -77,9 +77,9 @@ class SelfiesTokenizer(PreTrainedTokenizer):
 
     def _decode(
         self,
-        token_ids: Union[int, List[int]],
+        token_ids: int | list[int],
         skip_special_tokens: bool = False,
-        clean_up_tokenization_spaces: bool = None, # not implemented
+        clean_up_tokenization_spaces: bool | None = None, # not implemented
         **kwargs,
     ) -> str:
         if skip_special_tokens:
@@ -99,7 +99,7 @@ class SelfiesTokenizer(PreTrainedTokenizer):
         return len(self.__token_ids)
 
     @property
-    def vocab(self) -> Dict[str, int]:
+    def vocab(self) -> dict[str, int]:
         return self.__token_ids
 
 def hardcode_build_selfies_tokenizer() -> SelfiesTokenizer:
