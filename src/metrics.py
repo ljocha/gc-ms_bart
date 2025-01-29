@@ -6,7 +6,7 @@ from rdkit.Chem import rdMolDescriptors
 import numpy as np
 
 import selfies as sf
-from bart_spektro.selfies_tokenizer import SelfiesTokenizer
+from model.selfies_tokenizer import SelfiesTokenizer
 from utils.spectra_process_utils import get_fp_generator, get_fp_simil_function
 
 def compute_fp_simils(preds: list[str] | list[Chem.rdchem.Mol],

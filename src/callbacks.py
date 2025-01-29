@@ -13,8 +13,8 @@ from rdkit.Chem import Draw
 
 import selfies as sf
 
-from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
-from bart_spektro.selfies_tokenizer import SelfiesTokenizer
+from model.modeling_spectus import BartSpektroForConditionalGeneration
+from model.selfies_tokenizer import SelfiesTokenizer
 from metrics import compute_fp_simils
 
 
@@ -185,5 +185,3 @@ class PredictionLogger(transformers.TrainerCallback):
                                         state.global_step,
                                         args,
                                         kwargs)
-
-

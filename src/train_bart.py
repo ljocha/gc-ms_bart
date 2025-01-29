@@ -15,9 +15,9 @@ import peft
 from callbacks import PredictionLogger
 from metrics import SpectroMetrics
 from utils.data_utils import SpectroDataCollator, load_all_datapipes
-from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
-from bart_spektro.configuration_bart_spektro import BartSpektroConfig
-from bart_spektro.selfies_tokenizer import hardcode_build_selfies_tokenizer
+from model.modeling_spectus import BartSpektroForConditionalGeneration
+from model.configuration_spectus import BartSpektroConfig
+from model.selfies_tokenizer import hardcode_build_selfies_tokenizer
 from utils.general_utils import get_nice_time, build_tokenizer
 
 app = typer.Typer()

@@ -15,7 +15,7 @@ import pandas as pd
 from tqdm import tqdm
 
 from transformers import PreTrainedTokenizerFast
-from bart_spektro.selfies_tokenizer import SelfiesTokenizer
+from model.selfies_tokenizer import SelfiesTokenizer
 from pathlib import Path
 import selfies as sf
 import json

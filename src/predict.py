@@ -14,8 +14,8 @@ from typing import Dict, Any, Tuple, List
 
 from rdkit import Chem, RDLogger
 from utils.data_utils import SpectroDataCollator, build_single_datapipe
-# from bart_spektro import BartSpektroForConditionalGeneration
-from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
+# from model import BartSpektroForConditionalGeneration
+from model.modeling_spectus import BartSpektroForConditionalGeneration
 from utils.general_utils import build_tokenizer, get_sequence_probs, timestamp_to_readable, hours_minutes_seconds
 from copy import deepcopy
 

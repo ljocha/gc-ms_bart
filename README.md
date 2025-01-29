@@ -32,7 +32,7 @@ The predictions computed by our models are in the `predictions` folder. Along wi
 ## tokenizer
 The `tokenizer` folder contains all the different tokenizers used during the experiments and the final training. It also contains the traininig data for the BBPE tokenizers.
 
-## bart_spektro
+## model
 This folder contains the custom implementation of the BART model used for the experiments. The implementation is based on the `transformers` library and is a modification of the `BartForConditionalGeneration` class.
 
 ## notebooks
