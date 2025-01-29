@@ -43,8 +43,8 @@ evaluation_0:
         mean_db_score: '0.3873157933415626'
         mean_fpsd_score_probsort: '0.21353116783169848'
         mean_fpsd_score_similsort: '0.21353116783169848'
-        rate_of_BART_wins_probsort: '0.6825779891400788'
-        rate_of_BART_wins_similsort: '0.6825779891400788'
+        rate_of_spectus_wins_probsort: '0.6825779891400788'
+        rate_of_spectus_wins_similsort: '0.6825779891400788'
         rate_of_ties_probsort: '0.12598928203854207'
         rate_of_ties_similsort: '0.12598928203854207'
         ties:
@@ -120,8 +120,8 @@ evaluation_1:
         mean_db_score: '0.3873157933415626'
         mean_fpsd_score_probsort: '0.21353116783169848'
         mean_fpsd_score_similsort: '0.21353116783169848'
-        rate_of_BART_wins_probsort: '0.6825779891400788'
-        rate_of_BART_wins_similsort: '0.6825779891400788'
+        rate_of_spectus_wins_probsort: '0.6825779891400788'
+        rate_of_spectus_wins_similsort: '0.6825779891400788'
         rate_of_ties_probsort: '0.12598928203854207'
         rate_of_ties_similsort: '0.12598928203854207'
         ties:

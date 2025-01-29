@@ -43,8 +43,8 @@ evaluation_0:
         mean_db_score: '0.3879342743657602'
         mean_fpsd_score_probsort: '0.2572588679812755'
         mean_fpsd_score_similsort: '0.40282488406648853'
-        rate_of_BART_wins_probsort: '0.7220433721300457'
-        rate_of_BART_wins_similsort: '0.8670888314996286'
+        rate_of_spectus_wins_probsort: '0.7220433721300457'
+        rate_of_spectus_wins_similsort: '0.8670888314996286'
         rate_of_ties_probsort: '0.09198004740510135'
         rate_of_ties_similsort: '0.09198004740510135'
         ties:

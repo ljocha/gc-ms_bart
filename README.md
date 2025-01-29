@@ -13,7 +13,7 @@ For every dataset in the `data/datasets` folder, there is a README file that pro
 
 
 ## Pretraining & Finetuning
-Pretraining and finetuning can be conducted using the `train_bart.py` script. The script needs a couple of arguments to run, most importantly the `config_file`, which is a YAML file that contains all the necessary hyperparameters for the training.
+Pretraining and finetuning can be conducted using the `train_spectus.py` script. The script needs a couple of arguments to run, most importantly the `config_file`, which is a YAML file that contains all the necessary hyperparameters for the training.
 All the run scripts we used for our experiments are in the run_scripts folder and don't need any additional parameters. The scripts are named `run_pretrain*` and `run_finetune*`. Their corresponding config files are in the `configs` folder, again named `train_config_pretrain*` and `train_config_finetune*`.
 
 

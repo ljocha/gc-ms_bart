@@ -43,8 +43,8 @@ evaluation_0:
         mean_db_score: '0.3873157933415626'
         mean_fpsd_score_probsort: '0.1569726369861235'
         mean_fpsd_score_similsort: '0.1569726369861235'
-        rate_of_BART_wins_probsort: '0.631578947368421'
-        rate_of_BART_wins_similsort: '0.631578947368421'
+        rate_of_spectus_wins_probsort: '0.631578947368421'
+        rate_of_spectus_wins_similsort: '0.631578947368421'
         rate_of_ties_probsort: '0.1472832451999858'
         rate_of_ties_similsort: '0.1472832451999858'
         ties:
@@ -111,8 +111,8 @@ evaluation_1:
         mean_db_score: '0.3873157933415626'
         mean_fpsd_score_probsort: '0.1569726369861235'
         mean_fpsd_score_similsort: '0.1569726369861235'
-        rate_of_BART_wins_probsort: '0.631578947368421'
-        rate_of_BART_wins_similsort: '0.631578947368421'
+        rate_of_spectus_wins_probsort: '0.631578947368421'
+        rate_of_spectus_wins_similsort: '0.631578947368421'
         rate_of_ties_probsort: '0.1472832451999858'
         rate_of_ties_similsort: '0.1472832451999858'
         ties:
@@ -179,8 +179,8 @@ evaluation_2:
         mean_db_score: '0.3873157933415626'
         mean_fpsd_score_probsort: '0.1569726369861235'
         mean_fpsd_score_similsort: '0.1569726369861235'
-        rate_of_BART_wins_probsort: '0.631578947368421'
-        rate_of_BART_wins_similsort: '0.631578947368421'
+        rate_of_spectus_wins_probsort: '0.631578947368421'
+        rate_of_spectus_wins_similsort: '0.631578947368421'
         rate_of_ties_probsort: '0.1472832451999858'
         rate_of_ties_similsort: '0.1472832451999858'
         ties:
