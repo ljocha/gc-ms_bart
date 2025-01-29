@@ -5,7 +5,7 @@
 #PBS -N predict_nist
 
 cd /storage/brno2/home/ahajek/Spektro/MassGenie/clean_paper
-source /storage/brno2/home/ahajek/miniconda3/bin/activate BARTtrainH100
+source /storage/brno2/home/ahajek/miniconda3/bin/activate trainSpectus
 echo $CONDA_PREFIX
 ./config_runners/run_predict_all_nist_pbs.sh
 

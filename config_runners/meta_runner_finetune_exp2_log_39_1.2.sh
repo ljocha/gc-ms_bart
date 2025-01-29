@@ -5,7 +5,7 @@
 #PBS -N run_finetune_exp2_log_39_1.2
 
 cd /storage/brno2/home/ahajek/Spektro/MassGenie/clean_paper
-source /storage/brno2/home/ahajek/miniconda3/bin/activate BARTtrainH100
+source /storage/brno2/home/ahajek/miniconda3/bin/activate trainSpectus
 echo $CONDA_PREFIX
 ./config_runners/run_finetune_exp2_log_39_1.2.sh
 

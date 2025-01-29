@@ -3,7 +3,7 @@
 This project trains a Transformer model to tackle the task of de novo GC-MS spectra analysis.
 
 ## Environment setting
-The conda environment files are in the `env_specification` folder. `BARTtrainH100` is the main environment used for data preprocessing, training and evaluation. The `NEIMSpy3_environment` is specifically used only for NEIMS spectra generation. This was necessary because of the package incompatibility.
+The conda environment files are in the `env_specification` folder. `trainSpectus` is the main environment used for data preprocessing, training and evaluation. The `NEIMSpy3_environment` is specifically used only for NEIMS spectra generation. This was necessary because of the package incompatibility.
 
 
 ## Data preprocessing
