@@ -1,3 +1,0 @@
-[submodule "RLHF/trlx_GC_MS_BART"]
-	path = RLHF/trlx_GC_MS_BART
-	url = https://github.com/hejjack/trlx_GC_MS_BART

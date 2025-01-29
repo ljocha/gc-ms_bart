@@ -2,10 +2,10 @@ SPLIT_NAME=valid
 FP_TYPE=morgan
 SIMIL_FUN=tanimoto
 
-python ../precompute_denovo_index.py \
-           --reference ../data/datasets/NIST/NIST_split_filip/train.jsonl \
-           --query ../data/datasets/NIST/NIST_split_filip/${SPLIT_NAME}.jsonl \
-           --outfile ../data/datasets/NIST/NIST_split_filip/denovo_data/${SPLIT_NAME}_with_denovo_info.jsonl \
-           --num_processes 16 \
+python precompute_db_index.py \
+           --reference data/nist/train.jsonl \
+           --query data/nist/${SPLIT_NAME}.jsonl \
+           --outfile data/nist/${SPLIT_NAME}_with_db_index.jsonl \
+           --num_processes 64 \
            --fingerprint_type ${FP_TYPE} \
-           --simil_function ${SIMIL_FUN}
+           --fp_simil_function ${SIMIL_FUN}

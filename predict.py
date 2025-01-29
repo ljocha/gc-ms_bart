@@ -1,7 +1,7 @@
 import sys
 import io
 import os
-import time 
+import time
 from pathlib import Path
 import typer
 import yaml
@@ -11,12 +11,12 @@ import json
 from transformers import PreTrainedTokenizerFast
 from tqdm import tqdm
 from typing import Dict, Any, Tuple, List
-from icecream import ic
+
 from rdkit import Chem, RDLogger
-from data_utils import SpectroDataCollator, build_single_datapipe
+from utils.data_utils import SpectroDataCollator, build_single_datapipe
 # from bart_spektro import BartSpektroForConditionalGeneration
 from bart_spektro.modeling_bart_spektro import BartSpektroForConditionalGeneration
-from general_utils import build_tokenizer, get_sequence_probs, timestamp_to_readable, hours_minutes_seconds
+from utils.general_utils import build_tokenizer, get_sequence_probs, timestamp_to_readable, hours_minutes_seconds
 from copy import deepcopy
 
 RDLogger.DisableLog('rdApp.*')
@@ -24,8 +24,8 @@ RDLogger.DisableLog('rdApp.*')
 app = typer.Typer(pretty_exceptions_enable=False)
 
 
-def open_files(output_folder: Path, 
-               checkpoint: Path, 
+def open_files(output_folder: Path,
+               checkpoint: Path,
                dataset_config: Dict[str, Any],
                data_range: str = "",
                additional_info: str = "") -> Tuple[io.TextIOWrapper, io.TextIOWrapper]:
@@ -34,9 +34,9 @@ def open_files(output_folder: Path,
     model_name = checkpoint.parent.name
     run_name = str(round(timestamp)) + \
         "_" + dataset_config["data_split"]
-    run_name += (f"_{data_range}") if data_range else "_full"   
+    run_name += (f"_{data_range}") if data_range else "_full"
     run_name += ("_" + additional_info) if additional_info else ""
-    
+
     run_folder = output_folder / model_name / dataset_config["dataset_name"] / run_name
     run_folder.mkdir(parents=True, exist_ok=True)
     log_file = (run_folder / "log_file.yaml").open("w")
@@ -106,13 +106,13 @@ def main(
     config["cuda_visible_devices"] = os.environ.get("CUDA_VISIBLE_DEVICES", None)
     start_time = time.time()
     config["start_loading_time"] = timestamp_to_readable(start_time)
-    
+
     batch_size = dataloader_config["batch_size"]
     if batch_size != 1:
         raise ValueError("For different batch sizes the prediction gives wrong results. Please set batch_size=1")
     device = general_config["device"]
     additional_info = general_config["additional_naming_info"]
-    
+
     tokenizer = build_tokenizer(config["tokenizer_path"])
     preprocess_args["tokenizer"] = tokenizer
     datapipe = build_single_datapipe(dataset_config["data_path"],
@@ -127,7 +127,6 @@ def main(
 
     # set output files
     log_file, predictions_file = open_files(output_folder, checkpoint, dataset_config, data_range, additional_info)
-    gt_smiles_file = open("TEST_SMILES_GT_LABELS_PREDICT.smi", "w+")   # TEST
 
     model = BartSpektroForConditionalGeneration.from_pretrained(checkpoint)
     model.generation_config.length_penalty = generation_config["length_penalty"]
@@ -140,7 +139,6 @@ def main(
 
     # Start generating
     start_generation_time = time.time()
-    config["start_generation_time"] = timestamp_to_readable(start_generation_time)
     model.eval()
     model.to(device)
     with torch.no_grad():
@@ -150,9 +148,8 @@ def main(
                 continue
             if data_range_max is not None and i >= data_range_max:
                 break
-            
+
             # proceed with generation
-            gt_smiless = batch.pop("mol_repr")    ################ !!!!!!!!!!!!!!!!!!!!! test
             model_input = {key: value.to(device) for key, value in batch.items() if key in ["input_ids", "position_ids"]} # move tensors from batch to device
             generated_outputs = model.generate( # type: ignore
                 decoder_input_ids=decoder_input_ids.to(device),
@@ -164,7 +161,7 @@ def main(
 
             preds = tokenizer.batch_decode(generated_outputs.sequences.tolist(), skip_special_tokens=True) # type: ignore
             preds = np.array(preds).reshape(batch_size, generation_config["num_return_sequences"])
-            
+
             unique_preds, unique_idxs = get_unique_predictions(preds)
             canon_preds, canon_idxs = get_canon_predictions(unique_preds, unique_idxs) # filter invalid and canonicalize
             all_probs = get_sequence_probs(model, generated_outputs, batch_size, generation_config["num_beams"] > 1)
@@ -175,12 +172,11 @@ def main(
                 result_jsonl += json.dumps({
                     group[j]: all_probs[i, canon_idx].item()
                     for j, canon_idx in enumerate(canon_idxs[i])}) + "\n"
-            
+
             predictions_file.write(result_jsonl)
-            gt_smiles_file.write(gt_smiless[0] + "\n")   ############## test
 
     finished_time = time.time()
-    
+
     predictions_file.close()
     log_config = {
         "finished_time_utc": timestamp_to_readable(finished_time),

@@ -5,6 +5,22 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Run NEIMS preprocessing",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "clean_paper/deep-molecular-massspec/make_train_test_split.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "TARGET_PATH_NAME": "tmp/massspec_predictions",
+            },
+            "args": [
+                "--main_sdf_name", "../data/nist/neims_training_data/train_main_neims.sdf",
+                "--replicates_sdf_name", "../data/nist/neims_training_data/train_replicates_neims.sdf",
+                "--output_master_dir", "$TARGET_PATH_NAME/spectra_tf_records",
+            ]
+        },
+        {
             "name": "Run finetuning",
             "type": "debugpy",
             "request": "launch",
@@ -21,7 +37,7 @@
                 "--wandb-group", "debug",
                 "--additional-tags", "'A100:alfa:selfies'"
             ]
-        }, 
+        },
         {
             "name": "Run rassp preprocessing",
             "type": "debugpy",
@@ -39,7 +55,7 @@
                 "--num-processes 32",
                 "--concat"
             ]
-        },        
+        },
         {
             "name": "Run pretraining",
             "type": "debugpy",
@@ -57,7 +73,7 @@
                 "--wandb-group", "debug",
                 "--additional-tags", "'A100:alfa:RASSP'"
             ]
-        },   
+        },
         {
             "name": "Run evaluation",
             "type": "debugpy",
@@ -68,8 +84,8 @@
             "env": {
             },
             "args": [
-                "--predictions-path", "../predictions/stoic-aardvark-387_rassp1_neims1_112kPretrain_mf10/NIST_denovo/1710945663_valid_full_beam10/predictions.jsonl",
-                "--labels-path", "../data/datasets/NIST/NIST_split_filip/denovo_data/valid_with_denovo_info.jsonl",
+                "--predictions-path", "../predictions/stoic-aardvark-387_rassp1_neims1_112kPretrain_mf10/NIST/1710945663_valid_full_beam10/predictions.jsonl",
+                "--labels-path", "../data/datasets/NIST/NIST_split_filip/db_index/valid_with_db_index.jsonl",
                 "--config-file", "../configs/eval_config.yaml"
             ]
         },

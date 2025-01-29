@@ -3,7 +3,11 @@ data/**/*.pkl
 **/data/**/*.jsonl
 **/data/**/*.smi
 **/data/**/*.msp
+**/data/**/*.MSP
+**/data/**/*.SDF
 **/data/**/*.sdf
+**/data/**/*.zip
+**/data/**/*.mace
 data/**/*.sel
 data/**/*.SIF
 data/**/*.log
@@ -16,6 +20,7 @@ zia_training_stuff
 zia_training_stuff_30M/*
 deprecated/*
 RLHF/**
+FastEI/**
 
 # meta logs
 **/BARTSpektro_experiment*
@@ -25,6 +30,8 @@ RLHF/**
 data/categorized_michal.csv
 # predictions/**/*.jsonl
 tokenizer/training_data/*.txt
+clean_paper/deep-molecular-massspec/tmp
+clean_paper/tokenizer/training_data/1M.txt
 
 # temporary files
 **/.ipynb_checkpoints/**
@@ -35,3 +42,25 @@ tokenizer/training_data/*
 
 # large notebook
 notebooks/smaz_to_alfa*
+
+
+# pdf file
+data/datasets/extra_libraries/read_me.pdf
+
+# prediction tmp files
+predictions/**/*.png
+predictions/**/*.csv
+
+# share NIST splits
+!clean_paper/data/nist/train.smi
+!clean_paper/data/nist/valid.smi
+!clean_paper/data/nist/test.smi
+
+# figures (just for paper purposes)
+figures/**
+
+# vscode
+.vscode/**
+
+# hidden folders
+hidden/**
