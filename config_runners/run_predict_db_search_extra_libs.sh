@@ -1,11 +1,8 @@
-python ../predict_db_search.py --output-folder predictions \
-                               --config-file configs/predict_db_search_hss_extra_libs.yaml \
-                               --num-workers 25 &
+DB_TYPES=("hss" "sss" "mt")
 
-python ../predict_db_search.py --output-folder predictions \
-                               --config-file configs/predict_db_search_sss_extra_libs.yaml \
-                               --num-workers 25 &
-
-python ../predict_db_search.py --output-folder predictions \
-                               --config-file configs/predict_db_search_mt_extra_libs.yaml \
-                               --num-workers 25 &
+for db_type in "${DB_TYPES[@]}"
+do
+    python src/predict_db_search.py --output-folder predictions \
+                                   --config-file configs/predict_db_search_${db_type}_extra_libs.yaml \
+                                   --num-workers 32 &
+done

@@ -1,4 +1,4 @@
-MODEL=youthful-wave-590_exp8_9M_448+296
+MODEL=youthful-wave-590_exp5_9M_448+296
 LIBS=(NIST)
 DATASET_TYPE=test
 # DB_SEARCHES=(db_search_hss db_search_morgan_tanimoto db_search_sss)
@@ -12,8 +12,8 @@ for lib in ${LIBS[@]}; do
     echo "Processing $lib"
     echo "Processing model prediction: $model_predictions"
     echo "Processing db search prediction: $db_search_predictions"
-    python ../compare_models.py \
-        --additional-info "" \
+    python src/compare_models.py \
+        --additional-info "$DATASET_TYPE" \
         --models-prediction-paths "$model_predictions" \
         --db-search-prediction-paths "$db_search_morgan_tanimoto \
                                      $db_search_predictions" \

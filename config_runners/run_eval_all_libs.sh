@@ -1,4 +1,4 @@
-MODEL_NAMES=(youthful-wave-590_exp8_9M_448+296)
+MODEL_NAMES=(youthful-wave-590_exp5_9M_448+296)
 
 # Correct for loop with proper array reference
 for MODEL_NAME in ${MODEL_NAMES[@]} ; do

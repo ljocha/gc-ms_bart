@@ -1,4 +1,4 @@
-command: ../predict_db_search.py --output-folder predictions --config-file configs/predict_db_search_mt.yaml
+command: src/predict_db_search.py --output-folder predictions --config-file configs/predict_db_search_mt.yaml
   --num-workers 64
 dataset:
   data_split: valid

@@ -5,8 +5,8 @@ general:
 
 dataset:
   reference_data: "data/nist/train.jsonl" # REQUIRED!
-  query_data: "data/rcx_inhouse/rcx_inhouse_no_overlaps.jsonl" # REQUIRED!
-  dataset_name: RCX_NO # NEIMSgen/NIST/...    REQUIRED! (for naming)
+  query_data: "data/extra_libraries/SWGDRUG_3/SWGDRUG_3_noD.jsonl" # REQUIRED!
+  dataset_name: SWGDRUG # NEIMSgen/NIST/...    REQUIRED! (for naming)
   data_split: all # train/test/valid/... REQUIRED! (for naming)
 
 tokenizer_path: "tokenizer/tokenizer_mf10M.model" # REQUIRED!

@@ -1,10 +1,5 @@
-# # MACE
-# python ../evaluate_predictions.py --predictions-path predictions/hopeful-rain-557_exp4_rassp_neims_nist/MACE/1727882289_all_full_beam10/predictions.jsonl \
-#                                   --labels-path data/mace/MACE_r05_with_db_index.jsonl \
-#                                   --config-file configs/evaluate_mace.yaml
-
 #  NIST
-python evaluate_predictions.py --predictions-path ./predictions/royal-violet-583_exp2_lin_10000/NIST/1734179204_valid_full_beam10/predictions.jsonl \
+python evaluate_predictions.py --predictions-path ./predictions/royal-violet-583_exp1_lin_10000/NIST/1734179204_valid_full_beam10/predictions.jsonl \
                                --config-file configs/evaluate.yaml
 
 #  db search
