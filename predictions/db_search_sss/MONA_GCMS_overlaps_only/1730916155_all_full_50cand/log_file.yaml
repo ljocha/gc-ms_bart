@@ -1,4 +1,4 @@
-command: src/predict_db_search.py --output-folder predictions --config-file configs/predict_db_search_sss_extra_libs.yaml
+command: spectus/predict_db_search.py --output-folder predictions --config-file configs/predict_db_search_sss_extra_libs.yaml
   --num-workers 25
 dataset:
   data_split: all

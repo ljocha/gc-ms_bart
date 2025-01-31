@@ -1,5 +1,5 @@
 
-python src/compare_models.py \
+python spectus/compare_models.py \
                 --additional-info all_balmy_test \
                 --models-prediction-paths \
                 "./predictions/balmy-violet-577_exp5_224_148/NIST/1730720158_test_full_greedy \

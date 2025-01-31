@@ -22,7 +22,7 @@ PREDICTIONS=(./predictions/db_search_morgan_tanimoto/NIST/1731407440_test_full_5
 # Correct for loop with proper array reference
 for prediction in "${PREDICTIONS[@]}"; do
     echo "Processing prediction: $prediction `wc -l $prediction`"
-    python src/evaluate_predictions.py --predictions-path $prediction \
+    python spectus/evaluate_predictions.py --predictions-path $prediction \
                                     --labels-path data/nist/test_with_db_index.jsonl \
                                     --config-file configs/evaluate.yaml &
 done

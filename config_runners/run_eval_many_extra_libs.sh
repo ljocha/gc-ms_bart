@@ -14,7 +14,7 @@ for lib in ${LIBS[@]} ; do
         echo "Processing $lib $gen_method"
         echo "Processing prediction: $prediction"
 
-        python src/evaluate_predictions.py --predictions-path $prediction \
+        python spectus/evaluate_predictions.py --predictions-path $prediction \
                                           --config-file configs/evaluate.yaml
     done
 done

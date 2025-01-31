@@ -12,7 +12,7 @@ for lib in ${LIBS[@]}; do
     echo "Processing $lib"
     echo "Processing model prediction: $model_predictions"
     echo "Processing db search prediction: $db_search_predictions"
-    python src/compare_models.py \
+    python spectus/compare_models.py \
         --additional-info "$DATASET_TYPE" \
         --models-prediction-paths "$model_predictions" \
         --db-search-prediction-paths "$db_search_morgan_tanimoto \

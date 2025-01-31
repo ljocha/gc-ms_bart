@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/devout-disco-532_exp1_log_20_1.43/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/devout-disco-532_exp1_log_20_1.43/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_beam10_exp1_log_20_1.43.yaml
 cuda_visible_devices: '0'
 dataloader:

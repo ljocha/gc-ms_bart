@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/fresh-haze-530_exp1_int_emb_exp1_log_9_2.2/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/fresh-haze-530_exp1_int_emb_exp1_log_9_2.2/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_beam10_exp1_log_9_2.2.yaml
 cuda_visible_devices: '0'
 dataloader:

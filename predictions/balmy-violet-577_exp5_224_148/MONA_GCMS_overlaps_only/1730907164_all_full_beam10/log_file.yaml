@@ -1,4 +1,4 @@
-command: src/predict.py --checkpoint ../checkpoints/finetune_clean/balmy-violet-577_exp5_224_148/checkpoint-147476
+command: spectus/predict.py --checkpoint checkpoints/finetune_clean/balmy-violet-577_exp5_224_148/checkpoint-147476
   --output-folder predictions --config-file configs/predict_mona_beam10.yaml
 cuda_visible_devices: '2'
 dataloader:

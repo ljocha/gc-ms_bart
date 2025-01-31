@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/gallant-lion-533_exp1_log_29_1.28_exp2_mf10M/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/gallant-lion-533_exp1_log_29_1.28_exp2_mf10M/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_greedy_exp2_mf10M.yaml
 cuda_visible_devices: '0'
 dataloader:

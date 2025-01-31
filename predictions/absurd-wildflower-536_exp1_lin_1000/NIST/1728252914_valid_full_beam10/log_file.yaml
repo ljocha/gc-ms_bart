@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/absurd-wildflower-536_exp1_lin_1000/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/absurd-wildflower-536_exp1_lin_1000/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_beam10_exp1_lin_1000.yaml
 cuda_visible_devices: '0'
 dataloader:

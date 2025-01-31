@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/royal-violet-583_exp1_lin_10000/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/royal-violet-583_exp1_lin_10000/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_greedy_exp1_lin_10000.yaml
 cuda_visible_devices: '2'
 dataloader:

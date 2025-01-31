@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/dulcet-cloud-568_exp3_custom_neims/checkpoint-73738
+command: predict.py --checkpoint checkpoints/finetune_clean/dulcet-cloud-568_exp3_custom_neims/checkpoint-73738
   --output-folder predictions --config-file configs/predict_nist_valid_beam10.yaml
 cuda_visible_devices: '1'
 dataloader:

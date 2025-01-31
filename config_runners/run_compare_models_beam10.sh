@@ -1,4 +1,4 @@
-python src/compare_models.py \
+python spectus/compare_models.py \
                 --additional-info all_experiments_beam10 \
                 --models-prediction-paths \
                 "./predictions/apricot-frost-534_exp1_log_39_1.2/NIST/1728252914_valid_full_beam10 \

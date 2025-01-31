@@ -1,4 +1,4 @@
-model=../checkpoints/finetune_clean/youthful-wave-590_exp5_9M_448+296/checkpoint-294952
+model=checkpoints/finetune_clean/youthful-wave-590_exp5_9M_448+296/checkpoint-294952
 configs=(nist_test_greedy \
           nist_test_beam10 \
           nist_test_beam50 \

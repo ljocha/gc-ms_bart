@@ -1,4 +1,4 @@
-python src/compare_models.py \
+python spectus/compare_models.py \
                 --additional-info all_experiments_greedy \
                 --models-prediction-paths \
                 "./predictions/fresh-haze-530_exp1_log_9_2.2/NIST/1728026100_valid_full_greedy \

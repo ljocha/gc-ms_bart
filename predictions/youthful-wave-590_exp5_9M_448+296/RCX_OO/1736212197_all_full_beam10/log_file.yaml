@@ -1,4 +1,4 @@
-command: predict.py --checkpoint ../checkpoints/finetune_clean/youthful-wave-590_exp5_9M_448+296/checkpoint-294952
+command: predict.py --checkpoint checkpoints/finetune_clean/youthful-wave-590_exp5_9M_448+296/checkpoint-294952
   --output-folder predictions --config-file configs/predict_rcx_inhouse_oo_beam10.yaml
 cuda_visible_devices: GPU-83f9775f-f502-4683-141b-c510e5f0c080
 dataloader:

@@ -199,7 +199,7 @@ def get_spectro_config(model_args: Dict, tokenizer: transformers.PreTrainedToken
 def main(config_file: Path = typer.Option(..., dir_okay=False, help="Path to the config file"),
          checkpoint: Path = typer.Option(None, help="Path to the checkpoint directory"),
          resume_id: str = typer.Option(None, help="Wandb id of the run to resume, if not None, resume will be attempted"),
-         checkpoints_dir: Path = typer.Option("../checkpoints", help="Path to the checkpoints directory"),
+         checkpoints_dir: Path = typer.Option("checkpoints", help="Path to the checkpoints directory"),
          additional_info: str = typer.Option(None, help="use format '_info'; additional info to add to run_name"),
          additional_tags: str = typer.Option(None, help="Tags to add to the wandb run, one string, delimited by ':'"),
          device: str = typer.Option("cuda", help="Device to use for training: 'cuda' or 'cpu' ... CPU currently not available "),

@@ -1,5 +1,5 @@
 
-python src/compare_models.py \
+python spectus/compare_models.py \
                 --additional-info comparison_debug \
                 --models-prediction-paths \
                 "./predictions/youthful-wave-590_exp5_9M_448+296/NIST/1736157156_valid_full_greedy" \
