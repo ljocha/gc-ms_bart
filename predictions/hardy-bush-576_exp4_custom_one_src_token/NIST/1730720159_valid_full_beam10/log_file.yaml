@@ -90,7 +90,6 @@ evaluation_0:
         mean_relative_mw_difference_best_simil: 2.30%
         rate_of_exact_mw_prob: '0.63008836994712'
         rate_of_exact_mw_simil: '0.6629165631543458'
-        rate_of_exact_nominal_mw_prob: '0.6785676260780069'
         rate_of_exact_nominal_mw_simil: '0.6898179366149697'
         rate_of_mw_difference_less_than_1_best_prob: '0.7097987720481244'
         rate_of_mw_difference_less_than_1_best_simil: '0.7121056180572808'
@@ -178,7 +177,6 @@ evaluation_1:
         mean_relative_mw_difference_best_simil: 2.30%
         rate_of_exact_mw_prob: '0.63008836994712'
         rate_of_exact_mw_simil: '0.6629165631543458'
-        rate_of_exact_nominal_mw_prob: '0.6785676260780069'
         rate_of_exact_nominal_mw_simil: '0.6898179366149697'
         rate_of_mw_difference_less_than_1_best_prob: '0.7097987720481244'
         rate_of_mw_difference_less_than_1_best_simil: '0.7121056180572808'
@@ -266,7 +264,6 @@ evaluation_2:
         mean_relative_mw_difference_best_simil: 2.30%
         rate_of_exact_mw_prob: '0.63008836994712'
         rate_of_exact_mw_simil: '0.6629165631543458'
-        rate_of_exact_nominal_mw_prob: '0.6785676260780069'
         rate_of_exact_nominal_mw_simil: '0.6898179366149697'
         rate_of_mw_difference_less_than_1_best_prob: '0.7097987720481244'
         rate_of_mw_difference_less_than_1_best_simil: '0.7121056180572808'

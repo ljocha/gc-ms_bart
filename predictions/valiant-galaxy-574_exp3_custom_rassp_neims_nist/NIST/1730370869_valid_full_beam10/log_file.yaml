@@ -90,7 +90,6 @@ evaluation_0:
         mean_relative_mw_difference_best_simil: 2.38%
         rate_of_exact_mw_prob: '0.6243744898321326'
         rate_of_exact_mw_simil: '0.65752209248678'
-        rate_of_exact_nominal_mw_prob: '0.6711857188487064'
         rate_of_exact_nominal_mw_simil: '0.6845654257018136'
         rate_of_mw_difference_less_than_1_best_prob: '0.7011747169677397'
         rate_of_mw_difference_less_than_1_best_simil: '0.7062852681264862'
