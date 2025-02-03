@@ -1,4 +1,4 @@
-# SpecTUS: A Tool for GC-EI Mass Spectra Reconstruction
+# SpecTUS: Spectral Translator for Unknown Structures annotation from EI-MS spectra
 
 **SpecTUS** is a transformer-based tool for reconstructing Gas Chromatography-Electron Ionization (GC-EI) mass spectra. The model reconstructs spectra in a de novo manner — directly translating the spectra into 2D molecular structures represented as SMILES strings. The model is pretrained on a large dataset of synthetic spectra and fine-tuned on a smaller dataset of experimental NIST20 spectra. The NIST20 is a proprietary dataset, thus we cannot share the final model, but the code for training the model is carefully documented and available for public use. If you own a license for the NIST20 dataset, please reach out to us to get the final model.
 
