@@ -12,6 +12,7 @@ data/**/*.sel
 data/**/*.SIF
 data/**/*.log
 data/deprecated/*
+!data/example/SWGDRUG_100.msp
 
 data/categorized
 neims_gen_analysis_ntbs/*

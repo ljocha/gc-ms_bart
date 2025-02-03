@@ -48,12 +48,13 @@ def smiles_to_inchikey(smiles):
 
 def preprocess_spectrum(s: Spectrum,
                         tokenizer,
-                        source_token: str | None = None,
+                        smiles_field_name: str = "smiles",
+                        source_token: str | None = "<nist>",
                         max_num_peaks: int = 300,
                         max_mol_repr_len: int = 100,
                         max_mz: int = 500,     # NIST min_mz is 1.0, that's why we set it to 500
-                        log_base: float = 1.7,
-                        log_shift: int = 9,
+                        log_base: float = 1.28,
+                        log_shift: int = 29,
                         max_cumsum: Optional[float] = None,
                         mol_representation: str = "smiles"):
     """
@@ -66,6 +67,8 @@ def preprocess_spectrum(s: Spectrum,
         spectrum that has a corresponding SMILES saved in its metadata
     tokenizer : tokenizers.Tokenizer
         tokenizer used for tokenizing the mz values to fit input_ids
+    smiles_field_name : str
+        name of the field in the metadata that contains the SMILES
     max_num_peaks : int
         maximal num of peaks - specified by us not wanting too long sequences
     max_mol_repr_len : int
@@ -102,7 +105,7 @@ def preprocess_spectrum(s: Spectrum,
                   "no_mol_repr": 0}
 
     # canonicalization + possible selfies transformation
-    canon_mol_repr = canonicalize_smiles(s.metadata["smiles"])
+    canon_mol_repr = canonicalize_smiles(s.metadata[smiles_field_name])
 
     # filter corrupted
     if canon_mol_repr is None:
@@ -163,6 +166,7 @@ def preprocess_spectrum(s: Spectrum,
 
 def preprocess_spectra(spectra: List[Spectrum],
                        tokenizer,
+                       smiles_field_name: str = "smiles",
                        keep_spectra: bool = False,
                        preprocess_args: dict = {}) -> pd.DataFrame:
     """
@@ -175,6 +179,12 @@ def preprocess_spectra(spectra: List[Spectrum],
         list of spectra to be preprocessed
     tokenizer : tokenizers.Tokenizer
         tokenizer used for tokenizing the mz values in preprocess_spectrum fction
+    smiles_field_name : str
+        name of the field in the metadata that contains the SMILES
+    keep_spectra : bool
+        whether to keep the spectra (original mz, and intensities) in the output jsonl file along with the preprocessed data
+    preprocess_args : dict
+        dictionary of arguments for the preprocess_spectrum function
 
     Returns
     -------
@@ -198,7 +208,10 @@ def preprocess_spectra(spectra: List[Spectrum],
 
     num_spectra = 0
     for d in tqdm(spectra):
-        (input_ids, position_ids, cs, l, ed) = preprocess_spectrum(d, tokenizer, **preprocess_args)
+        (input_ids, position_ids, cs, l, ed) = preprocess_spectrum(d,
+                                                                   tokenizer,
+                                                                   smiles_field_name=smiles_field_name,
+                                                                   **preprocess_args)
         if not input_ids:
             long_mol_reprs += ed["long_mol_repr"]
             corrupted += ed["corrupted"]
@@ -254,10 +267,11 @@ def remove_stereochemistry_and_canonicalize(smiles):
 
 
 def msp2jsonl(path_msp: Path,
+              smiles_field_name: str = "smiles",
               tokenizer: PreTrainedTokenizerFast | SelfiesTokenizer | None = None,
               path_jsonl: Path | None = None,
               keep_spectra: bool = False,
-              do_preprocess: bool = True,
+              do_preprocess: bool = False,
               preprocess_args: dict = {}):
     """load msp file, preprocess, prepare BART compatible dataframe and save to jsonl file
 
@@ -275,14 +289,28 @@ def msp2jsonl(path_msp: Path,
     do_preprocess : bool
         whether to preprocess the spectra and prepare BART compatible jsonl file or just extract the spectra from msp to jsonl
     preprocess_args : dict
-        dictionary of arguments for the preprocess_spectrum function (max_num_peaks, max_mol_repr_len, max_mz, log_base, log_shift, max_cumsum, mol_representation, source_token)
+        dictionary of arguments for the preprocess_spectrum function if preprocessing allowed
+        -> (max_num_peaks, max_mol_repr_len, max_mz, log_base, log_shift, max_cumsum, mol_representation, source_token)
+        if empty, default values are used
+        -> {max_num_peaks=300,
+            max_mol_repr_len=100,
+            max_mz=500,
+            log_base=1.28,
+            log_shift=29,
+            max_cumsum=None,
+            mol_representation="smiles",
+            source_token="<nist>"}
     """
     assert do_preprocess and tokenizer is not None or not do_preprocess, "If do_preprocess is True, tokenizer has to be provided"
     data_msp = list(load_from_msp(str(path_msp), metadata_harmonization=False))
     if do_preprocess:
-        df = preprocess_spectra(data_msp, tokenizer, keep_spectra=keep_spectra, preprocess_args=preprocess_args)
+        df = preprocess_spectra(data_msp,
+                                tokenizer,
+                                smiles_field_name=smiles_field_name,
+                                keep_spectra=keep_spectra,
+                                preprocess_args=preprocess_args)
     else:
-        df = extract_spectra(data_msp)
+        df = extract_spectra(data_msp, smiles_field_name=smiles_field_name)
 
     if not path_jsonl:
         path_jsonl = path_msp.with_suffix(".jsonl")
@@ -420,7 +448,7 @@ def process_neims_spec(spec, metadata):
                     metadata_harmonization=False)
 
 
-def extract_spectra(spectra: List[Spectrum]) -> pd.DataFrame:
+def extract_spectra(spectra: List[Spectrum], smiles_field_name="smiles") -> pd.DataFrame:
     """
     Extracts mz and intensity from spectra and returns a dataframe
 
@@ -439,7 +467,9 @@ def extract_spectra(spectra: List[Spectrum]) -> pd.DataFrame:
     intensities = []
     canon_smiless = []
     for d in tqdm(spectra):
-        canon_smiles = canonicalize_smiles(d.metadata["smiles"])
+        smiles = d.metadata.get(smiles_field_name)
+        # assert smiles is not None, f"smiles_field_name {smiles_field_name} not found in metadata: {d.metadata}"
+        canon_smiles = canonicalize_smiles(smiles)
         if canon_smiles:
             mzs.append(d.peaks.mz)
             intensities.append(d.peaks.intensities)

@@ -122,8 +122,12 @@ def main(
     log_file_path = parent_dir / "log_file.yaml"
     with open(log_file_path, "r", encoding="utf-8") as f:
         old_logs = yaml.safe_load(f)
+    if not labels_path: # try to locate labels automatically
+        data_path = old_logs["dataset"].get("data_path", None) # for SpecTUS model
+        query_path = old_logs["dataset"].get("query_data", None) # for DB searches
+        labels_path = pathlib.Path(data_path) if data_path else pathlib.Path(query_path) if query_path else None
     if not labels_path:
-        labels_path = pathlib.Path(old_logs["dataset"]["data_path"])
+        raise ValueError("Labels path not provided and not found in the log_file.yaml")
 
     data_name, data_split, data_range = parse_predictions_path(predictions_path)
     num_lines_predictions = line_count(predictions_path)
@@ -415,8 +419,8 @@ def main(
                                            "mean_relative_mw_difference_best_prob": f"{mw_relative_diff_prob.mean():.2%}",
                                            "rate_of_mw_difference_less_than_1_best_simil": str(sum(mw_abs_diff_simil < 1) / num_lines_predictions),
                                            "rate_of_mw_difference_less_than_1_best_prob": str(sum(mw_abs_diff_prob < 1) / num_lines_predictions),
-                                           "rate_of_exact_nominal_mw_simil": str(sum(mw_bests_simil.round() == mw_gts.round()) / num_lines_predictions),
-                                           "rate_of_exact_nominal_mw_prob": str(sum(mw_bests_prob.round() == mw_gts.round()) / num_lines_predictions),
+                                        #    "rate_of_exact_nominal_mw_simil": str(sum(mw_bests_simil.round() == mw_gts.round()) / num_lines_predictions),  # wrong approach
+                                        #    "rate_of_exact_nominal_mw_prob": str(sum(mw_bests_prob.round() == mw_gts.round()) / num_lines_predictions),    # wrong approach
                                            "rate_of_exact_mw_simil": str(sum(mw_bests_simil == mw_gts) / num_lines_predictions),
                                            "rate_of_exact_mw_prob": str(sum(mw_bests_prob == mw_gts) / num_lines_predictions),
                                             }
