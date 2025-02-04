@@ -31,8 +31,7 @@ SpecTUS/
 ## 🚦 Usage
 Data preprocessing, pretraining, finetuning, hyperparameter search, model evaluation, and comparison of the models are all described in the [notebooks/](notebooks/) step by step.
 
-An example notebook for [inference](notebooks/05_inference_on_open_data.ipynb) is available to help you get started reconstructing spectra from an `msp` file once you have your model trained.
-
+An example notebook for [inference](notebooks/5_inference_on_open_data.ipynb) is available to help you get started reconstructing spectra from an `msp` file once you have your model trained.
 
 ## 📄 Citation
 If you use **SpecTUS** in your research, please cite (OLD CITATION):
