@@ -112,7 +112,8 @@ def main(
         raise ValueError("For different batch sizes the prediction gives wrong results. Please set batch_size=1")
     device = general_config["device"]
     additional_info = general_config["additional_naming_info"]
-
+    
+    print('tokenizer: ',config["tokenizer_path"])
     tokenizer = build_tokenizer(config["tokenizer_path"])
     preprocess_args["tokenizer"] = tokenizer
     datapipe = build_single_datapipe(dataset_config["data_path"],
@@ -149,6 +150,10 @@ def main(
             if data_range_max is not None and i >= data_range_max:
                 break
 
+            if batch["invalid"][0]: 
+                predictions_file.write('{ "invalid": True }\n')
+                continue
+            
             # proceed with generation
             model_input = {key: value.to(device) for key, value in batch.items() if key in ["input_ids", "position_ids"]} # move tensors from batch to device
             generated_outputs = model.generate( # type: ignore
