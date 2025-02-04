@@ -14,7 +14,7 @@ SpecTUS/
 ├── data/                    # Includes used NIST splits, example data, and synthetic data
 ├── forward/                 # Scripts for spectra generatos (NEIMS, RASSP) training
 ├── notebooks/               # Jupyter notebooks for data preprocessing, pretraining, finetuning, hyperparameter search, model evaluation, and comparison of the models
-├── predictions/             # Test predictions of all models (HP search) and DB search methods mentioned in the paper
+├── predictions/             # Test predictions of all models (hyperparameter search) and database search methods (HSS, SSS, BDC) mentioned in the paper
 ```
 
 ## 🛠 Installation
