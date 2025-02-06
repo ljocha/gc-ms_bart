@@ -1,10 +1,18 @@
-image=cerit.io/ljocha/spectrum:latest
+image=cerit.io/ljocha/spectus:latest
 
-ckpt=Adam_models/fearless-wildflower-490_rassp1_neims1_224kPretrain_148k/checkpoint-147476/
+ckpt=${PWD}/../../Adam_models/fearless-wildflower-490_rassp1_neims1_224kPretrain_148k/checkpoint-147476/
+
+run=--rm -ti -v ${PWD}/..:/opt/spectus -v ${ckpt}:/model -p 5000:5000 ${image}
 
 
 build: # prepare_model
 	docker build ${buildopt} -t ${image} .
+
+dev:
+	docker run ${run} bash 
+
+demo:
+	docker run ${run} /opt/spectus/demo/api/server.sh
 
 
 prepare_model:

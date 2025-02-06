@@ -1,9 +1,12 @@
-FROM continuumio/anaconda3:2024.06-1
+FROM condaforge/miniforge3:24.11.3-0
 
-COPY env_specification/BARTpredict_cpu.yml /tmp
-RUN conda env update -f /tmp/BARTpredict_cpu.yml
+COPY SpecTUS_predict.yaml /tmp
+RUN mamba env update -f /tmp/SpecTUS_predict.yaml
 
-RUN conda install unzip
+RUN mamba install unzip
 
 WORKDIR /opt
-RUN git clone --single-branch --branch galaxy https://github.com/ljocha/gc-ms_bart spectrum
+#RUN git clone --single-branch --branch galaxy https://github.com/ljocha/gc-ms_bart spectrum
+RUN git clone https://github.com/ljocha/gc-ms_bart spectus
+
+RUN . /opt/conda/etc/profile.d/conda.sh && conda activate SpecTUS_predict && pip install Flask Flask-Limiter

@@ -150,7 +150,7 @@ def main(
             if data_range_max is not None and i >= data_range_max:
                 break
 
-            if batch["invalid"][0]: 
+            if 'invalid' in batch and batch["invalid"][0]: 
                 predictions_file.write('{ "invalid": True }\n')
                 continue
             
