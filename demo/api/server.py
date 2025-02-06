@@ -86,7 +86,7 @@ def process_requests():
         ret = os.system(f'python {predict} --config-file {tmp}/{request_id}/config.yml --checkpoint {checkpoint} --output-folder {tmp}/{request_id}')
 
         if ret == 0:
-            with open(glob.glob(f'{tmp}/{request_id}/demo/*/predictions.jsonl')[0]) as r:
+            with open(glob.glob(f'{tmp}/{request_id}/models/demo/*/predictions.jsonl')[0]) as r:
                 for l in r: # XXX: one line
                     res = json.loads(l)
 
