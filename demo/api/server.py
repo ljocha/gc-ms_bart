@@ -20,16 +20,25 @@ app = Flask(__name__)
 spectus = '/opt/spectus/'
 predict =  spectus + 'spectus/predict.py'
 config = spectus + 'configs/predict_example.yaml'
-checkpoint = '/model/'
+checkpoint = '/models/' + os.environ['SPECTUS_MODEL']
 tokenizer = spectus + 'tokenizer/tokenizer_mf10M.model'
 
 tmp = tempfile.gettempdir()  
 
-# Rate limiter, limiting to 20 requests per day per IP
+def get_true_client_ip():
+   forwarded_for = request.headers.get('X-Forwarded-For', None)
+   if forwarded_for:
+       # The X-Forwarded-For can contain multiple IPs, the first being the real client IP.
+       real_ip = forwarded_for.split(',')[0].strip()
+       return real_ip
+   return get_remote_address()
+
+
+# Rate limiter, limiting to 100 requests per day per IP
 limiter = Limiter(
-    get_remote_address,
+    get_true_client_ip,
     app=app,
-    default_limits=["20 per day"]
+    default_limits=["100 per day"]
 )
 
 # In-memory structures
@@ -77,7 +86,7 @@ def process_requests():
         ret = os.system(f'python {predict} --config-file {tmp}/{request_id}/config.yml --checkpoint {checkpoint} --output-folder {tmp}/{request_id}')
 
         if ret == 0:
-            with open(glob.glob(f'{tmp}/{request_id}/demo/*/predictions.jsonl')[0]) as r:
+            with open(glob.glob(f'{tmp}/{request_id}/models/demo/*/predictions.jsonl')[0]) as r:
                 for l in r: # XXX: one line
                     res = json.loads(l)
 

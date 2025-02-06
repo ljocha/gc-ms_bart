@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: cerit.io/ljocha/spectus
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: spectus-demo.dyn.cloud.e-infra.cz
+      paths:
+        - /
+
+#model: youthful-wave-590_exp8_9M_448+296 
+model: fearless-wildflower-490_rassp1_neims1_224kPretrain_148k
+
+
