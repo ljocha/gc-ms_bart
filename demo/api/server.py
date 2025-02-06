@@ -20,7 +20,7 @@ app = Flask(__name__)
 spectus = '/opt/spectus/'
 predict =  spectus + 'spectus/predict.py'
 config = spectus + 'configs/predict_example.yaml'
-checkpoint = '/model/'
+checkpoint = '/models/' + os.environ['SPECTUS_MODEL']
 tokenizer = spectus + 'tokenizer/tokenizer_mf10M.model'
 
 tmp = tempfile.gettempdir()  

@@ -39,6 +39,10 @@ spec:
           volumeMounts:
             - name: spectus-checkpoints
               mountPath: /models
+          env:
+            - name: SPECTUS_MODEL
+              value: {{ .Values.model }}
+
       volumes:
         - name: spectus-checkpoints
           persistentVolumeClaim:

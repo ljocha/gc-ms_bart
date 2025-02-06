@@ -15,3 +15,7 @@ ingress:
       paths:
         - /
 
+#model: youthful-wave-590_exp8_9M_448+296 
+model: fearless-wildflower-490_rassp1_neims1_224kPretrain_148k
+
+
