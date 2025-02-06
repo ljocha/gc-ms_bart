@@ -1,3 +1,4 @@
 jupyter
 matchms
 pandas
+rdkit
