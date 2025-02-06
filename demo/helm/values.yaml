@@ -1,0 +1,17 @@
+replicaCount: 1
+
+image:
+  repository: cerit.io/ljocha/spectus
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  hosts:
+    - host: spectus-demo.dyn.cloud.e-infra.cz
+      paths:
+        - /
+

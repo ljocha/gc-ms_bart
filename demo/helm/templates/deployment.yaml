@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spectus
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: spectus
+  template:
+    metadata:
+      labels:
+        app: spectus
+    spec:
+      # SecurityContext at the Pod level
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: spectus
+          image: "{{ .Values.image.repository }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/opt/spectus/demo/api/server.sh"]
+          ports:
+            - containerPort: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            runAsUser: 1000
+          resources:
+            requests:
+              cpu: "10m"           # 1% of a single CPU core
+              memory: "64Mi"       # 64 MiB of memory
+            limits:
+              cpu: "16"        # 16 CPU cores
+              memory: "32Gi"       # 32 GiB of memory
+          volumeMounts:
+            - name: spectus-checkpoints
+              mountPath: /models
+      volumes:
+        - name: spectus-checkpoints
+          persistentVolumeClaim:
+            claimName: spectus-checkpoints
+
