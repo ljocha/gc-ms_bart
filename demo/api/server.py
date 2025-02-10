@@ -76,8 +76,8 @@ def process_requests():
         with open(f'{tmp}/{request_id}/config.yml','w') as cf:
             yaml.safe_dump(cfg, cf, default_flow_style=False)
 
-        del req['topk']
-        req['smiles'] = 'H'
+        del req['num_candidates']
+        req['smiles'] = 'CCO'
         with open(f'{tmp}/{request_id}/in.jsonl','w') as i:
             i.write(json.dumps(req))
 
@@ -130,7 +130,7 @@ def create_request():
         }
         requests_queue.put({
             'id': request_id,
-            'topk': request.json['topk'],
+            'num_candidates': request.json['num_candidates'],
             'mz' : request.json['mz'],
             'intensity': request.json['intensity']
             } )
