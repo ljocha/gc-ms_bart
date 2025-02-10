@@ -71,8 +71,7 @@ def process_requests():
         }
         cfg['general']['device'] = 'cpu'
 
-        cfg['generation_args']['num_return_sequences'] = req['topk']
-        cfg['generation_args']['num_beams'] = req['topk']
+        cfg['generation_args']['num_beams'] = cfg['generation_args']['num_return_sequences'] = req.get('num_candidates',10)
 
         with open(f'{tmp}/{request_id}/config.yml','w') as cf:
             yaml.safe_dump(cfg, cf, default_flow_style=False)
