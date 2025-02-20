@@ -5,6 +5,8 @@
 We make freely available the 17.2M synthetic spectra used for pretraining the model and the checkpoint of the pretrained model that
 can be further finetuned on your own dataset [here](https://huggingface.co/MS-ML).
 
+## 🎮 Demo 
+You can run a demo inference of the final model hosted on our server via Jupyter Notebook in [this](https://github.com/ljocha/spectus-demo) repository.
 
 ## 📁 Repository Structure
 ```
