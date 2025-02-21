@@ -28,7 +28,7 @@ data/categorized_michal.csv
 # predictions/**/*.jsonl
 tokenizer/training_data/*.txt
 deep-molecular-massspec/tmp
-clean_paper/tokenizer/training_data/1M.txt
+tokenizer/training_data/1M.txt
 
 # temporary files
 **/.ipynb_checkpoints/**
@@ -49,9 +49,9 @@ data/datasets/extra_libraries/read_me.pdf
 predictions/**/*.csv
 
 # share NIST splits
-!clean_paper/data/nist/train.smi
-!clean_paper/data/nist/valid.smi
-!clean_paper/data/nist/test.smi
+!data/nist/train.smi
+!data/nist/valid.smi
+!data/nist/test.smi
 
 # figures (just for paper purposes)
 figures/**
