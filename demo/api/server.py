@@ -150,7 +150,7 @@ def get_request_status(request_id):
         return jsonify({'error': 'Request not found'}), 404
 
 @app.route('/health', methods=['GET'])
-@limiter.limit("3600 per hour")  # Additional rate limit for POST
+@limiter.limit("none")  
 def health():
     return jsonify({'status','ok'}), 200
 
