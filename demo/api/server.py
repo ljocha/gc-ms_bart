@@ -149,6 +149,10 @@ def get_request_status(request_id):
             return jsonify({'status': status['status']}), 200
         return jsonify({'error': 'Request not found'}), 404
 
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({'status','ok'}), 200
+
 if __name__ == '__main__':
     try:
         app.run(host='0.0.0.0', port=5000, threaded=True)
