@@ -152,7 +152,7 @@ def get_request_status(request_id):
 @app.route('/health', methods=['GET'])
 @limiter.limit("none")  
 def health():
-    return jsonify({'status','ok'}), 200
+    return jsonify({'status':'ok'}), 200
 
 if __name__ == '__main__':
     try:
