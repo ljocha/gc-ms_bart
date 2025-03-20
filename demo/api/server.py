@@ -119,8 +119,8 @@ def cleanup_results():
 cleanup_thread = Thread(target=cleanup_results)
 cleanup_thread.start()
 
-@app.route('/predictions', methods=['POST'])
 @limiter.limit("20 per day")  # Additional rate limit for POST
+@app.route('/predictions', methods=['POST'])
 def create_request():
     request_id = str(uuid.uuid4())
     with lock:
@@ -149,8 +149,8 @@ def get_request_status(request_id):
             return jsonify({'status': status['status']}), 200
         return jsonify({'error': 'Request not found'}), 404
 
-@app.route('/health', methods=['GET'])
 @limiter.limit("none")  
+@app.route('/health', methods=['GET'])
 def health():
     return jsonify({'status':'ok'}), 200
 
