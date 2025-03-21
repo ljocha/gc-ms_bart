@@ -28,7 +28,7 @@ data/categorized_michal.csv
 # predictions/**/*.jsonl
 tokenizer/training_data/*.txt
 deep-molecular-massspec/tmp
-clean_paper/tokenizer/training_data/1M.txt
+tokenizer/training_data/1M.txt
 
 # temporary files
 **/.ipynb_checkpoints/**
