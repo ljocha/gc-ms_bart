@@ -3,16 +3,16 @@
 Mass spectrometry is a widely used experimental technique to identify chemical compounds in biological or environmental samples (blood, urine, water, soil, ...).
 From many possible scenarios we focus on the specific "untargeted" one when the compounds in the sample are not known a priori (unlike "targeted" scenario when presence of a specific compound should be proven or reputed).
 
-Traditionally, the sample is processed, yielding a series of spectra (set of peaks at specific masses and varying intensity), and the spectra are looked up in databases. This works quite fine for known compounds, for which the database records exist. However, in the domain of small organic molecules we are interested in, only up to 1 million of spectra were recorded, while over 1 billion of molecules are proven to exist, and up to 10^60 are combinatorically possible. Therefore the risk of not finding a specific molecule in the database is rather high.
+Traditionally, the sample is processed, yielding a series of spectra (set of peaks at specific masses and varying intensity), and the spectra are looked up in databases. This works quite fine for known compounds, for which the database records exist. However, in the domain of small organic molecules we are interested in, only up to 1 million of spectra were recorded with reliable annotation, while over 1 billion of such compounds are proven to exist, and up to 10^60 are combinatorically possible. Therefore, the risk of not finding a specific molecule in the database is rather high.
 
-The problem opens room for numerous machine techniques roughly classified (but not limited to):
-1. spectra embedding: find a suitable way to represent a spectrum as a vector of real numbers
-2. spectra prediction: given a structural formula of a compound, predict its mass spectrum
-3. spectra annotation: given a spectrum of a compound, find the structural formula
+The problem opens room for application of numerous machine learning techniques, roughly classified (but not limited to):
+1. _spectra embedding_: find a suitable way to represent a spectrum as a vector of real numbers
+2. _spectra prediction_: given a structural formula of a compound, predict its mass spectrum
+3. _spectra annotation_: given a spectrum of a compound, find the structural formula
 
-At Masaryk University (ICS and Recetox) we developed SpecTUS [1], based on the BART transformer model, addressing the problem #3 with unprecedented accuracy for the specific case of GC-EI-MS. We are starting collaboration with Tomas Pluskal team (Institute of Organic Chemistry and Biochemistry of the CAS), who developed DreaMS [2], a unique approach to #1, University of Münster and NXT Spectra, who come with advanced solution to #2 and numerous practical applications.
+At Masaryk University (ICS and Recetox) we developed SpecTUS [1], based on the BART transformer model, addressing the problem #3 with unprecedented accuracy for the specific case of GC-EI-MS. We are starting collaboration with Tomas Pluskal team (Institute of Organic Chemistry and Biochemistry of the CAS), who developed DreaMS [2], a unique approach to #1, and University of Münster and NXT Spectra, who come with advanced solution to #2 and numerous practical applications.
 
-We are looking for students willing to join the team having the vision of their Master thesis drawn from this research area according to the following topics/experiments:
+We are looking for students willing to join the team having the vision of their Master thesis drawn from this research area according to the  topics/experiments listed bellow. We expect more students to work in a team for about 6 months, and to specify their individual theses assignments as these emerge from the joint work.
 
 
 ## Thorough evaluation of SpecTUS with advanced data splitting
